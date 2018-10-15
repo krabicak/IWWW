@@ -1,0 +1,149 @@
+/*css3 flexbox (google)*/
+
+body, html{
+    height: 100%;
+    margin: 0;
+    background-color: #F5F5F5;
+}
+
+body{
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #4a4a4a;
+}
+
+header{
+    top: 0%;
+    width: 100%;
+    position: fixed;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #333;
+    height: 50px;
+}
+
+header nav a{
+    display: inline-block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: underline;
+    font-size: 18px;
+}
+
+header nav a:hover{
+    background-color: white;
+    color: black;
+}
+
+#header-web-title {
+    color: white;
+    font-size: 30px;
+    margin: 10px;
+}
+
+#header-logo{
+    height: 40px;
+    margin-right: 20px;
+}
+
+#hero{
+    height: 100%;
+    background: url("../imgs/snycl.jpg") no-repeat center;
+    background-size: cover;
+    position: relative;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+#hero h1{
+    font-size: 5em;
+}
+
+#hero a{
+    padding: 20px 40px;
+    background-color: white;
+    border-radius: 5px;
+    color: #4a4a4a;
+    border: 1px;
+    transition: 1s;
+}
+
+#hero a:hover{
+    background-color: black;
+    color: white;
+    border: 1px solid white;
+}
+
+.full-width-wrapper, main{
+    width: 960px;
+    margin: 0 auto;
+}
+
+.flex-wrap{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.card{
+    text-align: left;
+    width: 280px;
+    min-height: 100px;
+    padding: 10px;
+    margin: 5px;
+}
+
+.card > img{
+    height: 100px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #4a4a4a;
+}
+
+.card > p{
+    text-align: justify;
+}
+
+.card > a{
+    width: 100%;
+    background-color: #333;
+    color: white;
+    padding-top: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    transition: 1s;
+    border: 1px solid rgb(60,64,60);
+}
+
+.card > a:hover{
+    background-color: rgba(204,208,200,0);
+    color: #333333;
+}
+
+footer {
+    margin-top: 20px;
+    min-height: 200px;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #333;
+    color: #f2f2f2;
+}
+
+footer a{
+    color: white;
+    text-decoration: underline;
+}
+
+#footer-newsletter input[type="submit"]{
+    width: 100%;
+}
