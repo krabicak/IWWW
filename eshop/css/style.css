@@ -1,0 +1,21 @@
+body, html {
+    font-family: "Bahnschrift", "Arial", "Helvetica", sans-serif;
+    height: 100%;
+    margin: 0;
+    background-color: white;
+}
+
+p {
+    text-align: justify;
+}
+
+#content {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#content main {
+    display: flex;
+    float: right;
+}
+
