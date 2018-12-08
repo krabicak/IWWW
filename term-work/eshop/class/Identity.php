@@ -27,6 +27,25 @@ class Identity
     {
         $this->id = $id;
     }
+
+    /**
+     * @return null
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+    /**
+     * @param null $role
+     */
+    public function setRole($role)
+    {
+        $this->role = $role;
+    }
+
+
+
 }
 
 ?>

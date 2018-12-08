@@ -1,16 +1,28 @@
-#content nav h2{
+#content nav h2 {
     margin-left: 5px;
 }
 
-#content nav a:hover{
+#content nav a:hover {
     background-color: black;
     color: white;
 }
 
-#content nav{
+#content nav {
     float: left;
-    width: 215px;
     background-color: #d3bd8b;
+}
+
+@media only screen and (min-width: 601px) {
+    #content nav {
+        width: 215px;
+        float: left;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    #content nav {
+        width: 100%;
+    }
 }
 
 #content nav a {

@@ -1,0 +1,31 @@
+@media only screen and (min-width: 601px) {
+    #user-management {
+    }
+}
+
+#user-management {
+
+    display: grid;
+    padding-left: 20px;
+    padding-top: 20px;
+    padding-right: 20px;
+}
+
+#user-management table input[type=email]{
+    width: 98%;
+}
+
+#user-management #search_by_email{
+    display: inline-block;
+}
+#user-management h1 {
+    font-size: 30px;
+}
+
+#user-management table {
+}
+
+#user-management td {
+    text-align: left;
+    border: 1px solid #8d8d8d;
+}

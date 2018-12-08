@@ -1,3 +1,6 @@
+<?php
+Controller::getInstance()->register();
+?>
 <form id="registration-form" method="post">
     <h2>Registration</h2>
     <input type="email" name="email" title="E-mail" placeholder="Email">

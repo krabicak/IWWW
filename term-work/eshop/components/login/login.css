@@ -18,6 +18,22 @@
     box-sizing: border-box;
 }
 
+@media only screen and (min-width: 601px) {
+    #login-form{
+        width: 215px;
+    }
+
+    #login-form input[type=email], #login-form input[type=password] {
+        width: 95%;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    #login-form input[type=email], #login-form input[type=password]{
+        width: 98%;
+    }
+}
+
 #login-form input[type = submit] {
     float: right;
     font-family: "Bahnschrift", "Arial", "Helvetica", sans-serif;

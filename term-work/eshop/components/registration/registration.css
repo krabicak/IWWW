@@ -1,6 +1,5 @@
 #registration-form{
     background-color: #d3bd8b;
-    margin: 5px;
 }
 
 #registration-form input{
@@ -9,6 +8,22 @@
 
 #registration-form h2{
     margin-left: 5px;
+}
+
+@media only screen and (min-width: 601px) {
+    #registration-form{
+        width: 215px;
+    }
+
+    #registration-form input[type=email], #registration-form input[type=password] {
+        width: 95%;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    #registration-form input[type=email], #registration-form input[type=password]{
+        width: 98%;
+    }
 }
 
 #registration-form input[type=email], #registration-form input[type=password] {

@@ -1,6 +1,4 @@
 <?php
-ob_start();
-session_start();
 require_once "cnf/config.php";
 function autoload($className)
 {
@@ -8,40 +6,37 @@ function autoload($className)
         require_once './class/' . $className . '.php';
         return true;
     }
-    return false;
-}
 
+    if (file_exists('./controller/Controller.php')) {
+        require_once './controller/Controller.php';
+    }
+}
 spl_autoload_register('autoload');
+ob_start();
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-shop Petr Hotovec</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="components/header/header.css">
     <link rel="stylesheet" type="text/css" href="components/navigation/navigation.css">
     <link rel="stylesheet" type="text/css" href="components/login/login.css">
     <link rel="stylesheet" type="text/css" href="components/registration/registration.css">
+    <link rel="stylesheet" type="text/css" href="components/user-management/user-management.css">
+
 </head>
 <body>
 <?php
-include "default/default.php";
+include "components/header/header.php";
 ?>
 
 <div id="content">
     <?php
-    include "components/navigation/nav.php";
-    ?>
-    <?php
-    if (isset($_GET["q"])) {
-        require_once "page/search-page.php";
-    } else
-        if (isset($_GET["page"])) {
-            if (file_exists("page/" . $_GET["page"] . ".php")) {
-                require_once "page/" . $_GET["page"] . ".php";
-            }
-        }
+    Controller::getInstance()->navigation();
     ?>
 </div>
 

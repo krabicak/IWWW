@@ -12,10 +12,9 @@
             </div>
             <a href=<?= BASE_URL . "?page=contact" ?>>Contact</a>
             <?php
-            if (isset($_SESSION["userID"])) {
+            if (Controller::getInstance()->isUserLogged()) {
                 echo '<a href="' . BASE_URL . '?page=log-out">Log out</a>';
-            } else
-                echo '<a href="' . BASE_URL . '?page=login-page">Login</a>';
+            }
             ?>
             <a href=<?= BASE_URL . "?page=basket" ?>>Basket</a>
         </nav>

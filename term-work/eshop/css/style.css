@@ -14,8 +14,3 @@ p {
     flex-wrap: wrap;
 }
 
-#content main {
-    display: flex;
-    float: right;
-}
-

@@ -4,12 +4,13 @@
     <a href="#historie">gdsgsd</a>
     <br/>
     <?php
-    if (!isset($_SESSION["userID"])) {
+    if (!Controller::getInstance()->isUserLogged()) {
         require_once "components/login/login.php";
+        require_once "components/registration/registration.php";
     } else {
-        echo '<a href="'.BASE_URL.'?page=log-out">Log out</a>';
-        if ($_SESSION["role"]=="admin"){
-            echo '<a href="?page=user-management&action=read-all">Users</a>';
+        echo '<a href="' . BASE_URL . '?page=log-out">Log out</a>';
+        if (Controller::getInstance()->isUserAdmin()) {
+            echo '<a href="' . BASE_URL . '?page=user-management">Users</a>';
         }
     }
     ?>
