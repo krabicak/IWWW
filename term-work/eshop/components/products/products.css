@@ -1,0 +1,40 @@
+.product-box {
+    width: 350px;
+    height: 350px;
+    margin: 5px;
+    border: #919191 solid 1px;
+}
+
+.product-box:hover {
+    background-color: rgba(225, 203, 147, 0.55);
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 601px) {
+    .product-box {
+        width: 98%;
+        height: auto;
+    }
+
+}
+
+.product-box h2 {
+    margin: 10px;
+}
+
+.product-box h3 {
+    color: #9f0000;
+}
+
+.product-box img {
+    margin: 10px;
+    float: left;
+    border: #bfbfbf solid 1px;
+}
+
+.description {
+    margin: 5px;
+    width: 30%;
+    float: right;
+    text-align: right;
+}

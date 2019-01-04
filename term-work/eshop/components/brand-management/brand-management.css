@@ -1,0 +1,31 @@
+@media only screen and (min-width: 601px) {
+    #brand-management {
+    }
+}
+
+#brand-management {
+
+    display: grid;
+    padding-left: 20px;
+    padding-top: 20px;
+    padding-right: 20px;
+}
+
+#brand-management table input[type=text]{
+    width: 98%;
+}
+
+#brand-management #search_by_brand{
+    display: inline-block;
+}
+#brand-management h1 {
+    font-size: 30px;
+}
+
+#brand-management table {
+}
+
+#brand-management td {
+    text-align: left;
+    border: 1px solid #8d8d8d;
+}
