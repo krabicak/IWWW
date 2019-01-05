@@ -15,10 +15,10 @@
             echo '<a href="' . BASE_URL . '?page=product-management">Products</a>';
             echo '<a href="' . BASE_URL . '?page=brand-management">Brands</a>';
             echo '<a href="' . BASE_URL . '?page=category-management">Categories</a>';
-            echo '<a href="' . BASE_URL . '?page=user-management">Users</a>';
         }
         if (Controller::getInstance()->isUserAdmin()) {
             echo "<h2>Admin management</h2>";
+            echo '<a href="' . BASE_URL . '?page=user-management">Users</a>';
         }
     }
     ?>

@@ -4,6 +4,7 @@
         <input type='text' name='brand'>
         <input type='submit' name='action' value='by-brand'>
     </form>
+    <br>
 
     <?php
     Controller::getInstance()->brandsManagement();

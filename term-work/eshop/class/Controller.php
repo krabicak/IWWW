@@ -71,10 +71,10 @@ class Controller
                 if (file_exists("page/" . $_GET["page"] . ".php")) {
                     require_once "page/" . $_GET["page"] . ".php";
                 } else {
-                    require_once "page/products.php";
+                    header("location:" . BASE_URL . "?page=products");
                 }
             } else {
-                require_once "page/products.php";
+                header("location:" . BASE_URL . "?page=products");
             }
     }
 
@@ -211,7 +211,7 @@ class Controller
     {
         $categories = $this->categoryDao->getAllCategories();
         foreach ($categories as $category) {
-            echo "<a href='" . BASE_URL . "?category=" . $category->getCategory() . "'>" . $category->getCategory() . "</a>";
+            echo "<a href='" . BASE_URL . "?page=products&category=" . $category->getCategory() . "'>" . $category->getCategory() . "</a>";
         }
     }
 
@@ -273,27 +273,58 @@ class Controller
 
     private function showProducts($products)
     {
-        foreach ($products as $product) {
-            echo $product->show();
+        function costDESC($a, $b)
+        {
+            return $a->getCost() > $b->getCost();
         }
+
+        function costASC($a, $b)
+        {
+            return $a->getCost() < $b->getCost();
+        }
+
+        function createdDESC($a, $b)
+        {
+            return $a->getCreated() < $b->getCreated();
+        }
+
+        function createdASC($a, $b)
+        {
+            return $a->getCreated() > $b->getCreated();
+        }
+
+        if (isset($_POST["sort"]) && $_POST["sort"] == "costDESC") usort($products, "costDESC");
+        if (isset($_POST["sort"]) && $_POST["sort"] == "costASC") usort($products, "costASC");
+        if (isset($_POST["sort"]) && $_POST["sort"] == "createdDESC") usort($products, "createdDESC");
+        if (isset($_POST["sort"]) && $_POST["sort"] == "createdASC") usort($products, "createdASC");
+        if (empty($products)) echo "<h2 id='nothing-to-show'>Nothing to show</h2>";
+        else
+            foreach ($products as $product) {
+                echo $product->show();
+            }
     }
 
     public function showAllProducts()
     {
-        $this->showProducts($this->productsDao->getAllProducts());
+        if (isset($_POST["action"]) && $_POST["action"] == "show-by-filters" && !$_POST["brand"] == "") {
+            $this->showProducts($this->productsDao->getProductsByBrand($_POST["brand"]));
+        } else
+            $this->showProducts($this->productsDao->getAllProducts());
 
     }
 
     public function showProductsByCategory()
     {
-        $this->showProducts($this->productsDao->getProductsByCategory($_GET["category"]));
-
+        if (isset($_POST["action"]) && $_POST["action"] == "show-by-filters" && !$_POST["brand"] == "") {
+            $this->showProducts($this->productsDao->getProductsByCategoryAndBrand($_GET["category"], $_POST["brand"]));
+        } else
+            $this->showProducts($this->productsDao->getProductsByCategory($_GET["category"]));
     }
 
     private function showProductsOfManagement($brands, $categories, $products)
     {
         echo "<table>";
-        echo "<tr><td>id</td><td>created</td><td>name</td><td>brand</td><td>category</td><td>stock</td><td>image link</td><td>actions</td></tr>";
+        echo "<tr><td>id</td><td>created</td><td>name</td><td>brand</td><td>category</td><td>stock</td><td>image link</td><td>cost</td><td>actions</td></tr>";
         echo "<tr><td>id</td><td>created</td><form method='post' name='action'><td><input type='text' name='product'></td>";
         echo "<td><select name='brand'>";
         foreach ($brands as $brand) {
@@ -307,6 +338,7 @@ class Controller
         echo "</select></td>";
         echo "<td><input type='text' name='stock' value='0'></td>";
         echo "<td><input type='text' name='image-link' value=''></td>";
+        echo "<td><input type='text' name='cost' value='0'></td>";
         echo "<td><button name='action' type='submit' value='add-product'>add</button></td></form></tr>";
         foreach ($products as $product) {
             $product->setCategories($categories);
@@ -321,17 +353,84 @@ class Controller
 
         $categories = $this->categoryDao->getAllCategories();
         $brands = $this->brandsDao->getAllBrands();
+        $products = $this->productsDao->getAllProducts();
 
         if (isset($_POST["action"])) {
-            if ($_POST["action"] == "upload-image") {
+            $product = explode(':', $_POST["action"], 2);
+            if ($product[0] == "upload-image") {
                 ImageHelper::uploadFile();
+            } elseif ($product[0] == "edit-description") {
+                header("location: " . BASE_URL . "?page=edit-description&product=" . $product[1]);
+            } elseif ($product[0] == "by-id") {
+                echo "<h2>Product by id</h2>";
+                $products = $this->productsDao->getProductById($_POST["id"]);
+            } elseif ($product[0] == "by-name") {
+                echo "<h2>Products by name</h2>";
+                $products = $this->productsDao->getProductsByName($_POST["name"]);
+            } elseif ($product[0] == "add-product") {
+                $this->productsDao->addProduct($_POST["product"], $_POST["image-link"], $_POST["stock"], $_POST["brand"], $_POST["category"], $_POST["cost"]);
+                unset($_POST["action"]);
+                header("Refresh:0");
+            } elseif ($product[0] == "update-product") {
+                $this->productsDao->updateProduct($product[1], $_POST["name"], $_POST["image-link"], $_POST["stock"], $_POST["brand"], $_POST["category"], $_POST["cost"]);
+                unset($_POST["action"]);
+                header("Refresh:0");
             }
         }
 
-        $products = $this->productsDao->getAllProducts();
-
         $this->showProductsOfManagement($brands, $categories, $products);
 
+    }
+
+    public function getDescriptionOfProduct($id)
+    {
+        if (isset($this->productsDao->getProductById($id)[0])) {
+            return $this->productsDao->getProductById($id)[0]->getDescription();
+        } else return "";
+    }
+
+    public function editDescription()
+    {
+        if (isset($_POST["action"])) {
+            if ($_POST["action"] == "save-description") {
+                $this->productsDao->updateDescriptionOfProduct($_GET["product"], $_POST["editor"]);
+                header("location: " . BASE_URL . "?page=product-management");
+            }
+        }
+    }
+
+    public function getAllBrands()
+    {
+        return $this->brandsDao->getAllBrands();
+    }
+
+    public function getAllCategories()
+    {
+        return $this->categoryDao->getAllCategories();
+    }
+
+    public function showOptionBox()
+    {
+        echo '<div id="search-by"><form method="post">Brand: <select name="brand">';
+        echo '<option value=""></option>';
+        foreach (Controller::getInstance()->getAllBrands() as $brand) {
+            echo "<option value='" . $brand->getBrand() . "'";
+            if (isset($_POST["action"]) && $_POST["action"] == "show-by-filters" && $_POST["brand"] == $brand->getBrand()) echo "selected='selected'";
+            echo ">" . $brand->getBrand() . "</option>";
+        }
+        echo '</select>';
+        echo '&nbsp;Sort by : <select name="sort">';
+        echo '<option value = "createdDESC"';
+        if (isset($_POST["sort"]) && $_POST["sort"] == "createdDESC") echo 'selected="selected"';
+        echo '>Newest</option><option value="costASC"';
+        if (isset($_POST["sort"]) && $_POST["sort"] == "costASC") echo 'selected="selected"';
+        echo '>Lowest price</option><option value = "costDESC"';
+        if (isset($_POST["sort"]) && $_POST["sort"] == "costDESC") echo 'selected="selected"';
+        echo '>Highest price</option><option value = "createdASC"';
+        if (isset($_POST["sort"]) && $_POST["sort"] == "createdASC") echo 'selected="selected"';
+        echo '>Oldest</option>';
+        echo '</select><button id="show-by-filters-button" type="submit" name="action" value="show-by-filters">Show</button></form>';
+        echo '</div >';
     }
 }
 

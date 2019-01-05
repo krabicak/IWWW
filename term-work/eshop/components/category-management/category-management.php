@@ -4,6 +4,7 @@
         <input type='text' name='category'>
         <input type='submit' name='action' value='by-category'>
     </form>
+    <br>
 
     <?php
     Controller::getInstance()->categoryManagement();

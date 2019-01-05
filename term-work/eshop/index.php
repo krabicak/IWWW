@@ -52,9 +52,6 @@ session_start();
 
 <?php
 include "components/header/header.php";
-/*
-session_unset();
-session_destroy();*/
 ?>
 
 <div id="content">

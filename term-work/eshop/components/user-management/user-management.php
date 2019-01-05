@@ -4,6 +4,7 @@
         <input type='email' name='email'>
         <input type='submit' name='action' value='by-email'>
     </form>
+    <br>
 
     <?php
     Controller::getInstance()->userManagement();

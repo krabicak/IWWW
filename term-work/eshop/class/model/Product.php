@@ -203,7 +203,7 @@ class Product
 
     public function show()
     {
-        $string = '<form method="post" class="product-box" onclick="javascript:document.location.href =' . BASE_URL . '"?page=detail&product=' . $this->id . ';return false;">';
+        $string = '<form method="post" class="product-box" onclick="javascript:document.location.href =\'' . BASE_URL . '?page=detail&product=' . $this->id . '\';return false;">';
         $string .= '<h2>' . $this->name . '</h2>';
         $string .= '<img width="60%" src="' . $this->image . '" alt="' . $this->name . '">';
         $string .= '<div class="description"><h3>' . $this->costs[0]->getCost() . ' Kč</h3>';
@@ -235,8 +235,8 @@ class Product
         $string .= "</select></td>";
         $string .= "<td><input type='text' name='stock' value='$this->stock'></td>";
         $string .= "<td><input type='text' name='image-link' value='$this->image'></td>";
+        $string .= "<td><input type='text' name='cost' value='" . $this->costs[0]->getCost() . "'></td>";
         $string .= "<td><button name='action' value='edit-description:$this->id' type='submit'>edit description</button>";
-        $string .= "<button name='action' value='remove-product:$this->id' type='submit'>delete</button>";
         $string .= "<button name='action' value='update-product:$this->id' type='submit'>update</button></td>";
         $string .= "</form></tr>";
         return $string;
