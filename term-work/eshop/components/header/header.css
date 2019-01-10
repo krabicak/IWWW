@@ -79,7 +79,7 @@ header input[type=search] {
     width: 68%;
 }
 
-header input[type = submit] {
+header button {
     font-family: "Bahnschrift", "Arial", "Helvetica", sans-serif;
     background-color: #bba280;
     color: black;

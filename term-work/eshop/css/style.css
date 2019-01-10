@@ -27,13 +27,3 @@ p {
     flex-wrap: wrap;
 }
 
-#search-by{
-    margin: 10px;
-    display: inline-block;
-    line-height: 25px;
-}
-
-#show-by-filters-button{
-    margin-left: 5px;
-}
-

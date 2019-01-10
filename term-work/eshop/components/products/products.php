@@ -1,7 +1,11 @@
 <?php
-if (isset($_GET["category"])) {
-    Controller::getInstance()->showProductsByCategory();
-} else Controller::getInstance()->showAllProducts();
+if (isset($_POST["add-to-basket"])) {
+    if (Controller::getInstance()->isUserLogged()) Controller::getInstance()->addProductToBasket();
+    else echo "<script>alert('Please login or register')</script>";
+}
+if (isset($_GET["category"])) Controller::getInstance()->showProductsByCategory();
+elseif (isset($_GET["q"])) Controller::getInstance()->searchProducts();
+else Controller::getInstance()->showAllProducts();
 ?>
 
 

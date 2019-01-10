@@ -47,11 +47,15 @@ session_start();
     <link rel="stylesheet" type="text/css" href="components/detail/detail.css">
     <link rel="stylesheet" type="text/css" href="components/product-management/product-management.css">
     <link rel="stylesheet" type="text/css" href="components/edit-description/edit-description.css">
+    <link rel="stylesheet" type="text/css" href="components/filter/filter.css">
+    <link rel="stylesheet" type="text/css" href="components/my-orders/my-orders.css">
+    <link rel="stylesheet" type="text/css" href="components/orders-management/orders-management.css">
+    <link rel="stylesheet" type="text/css" href="components/basket/basket.css">
 </head>
 <body>
 
 <?php
-include "components/header/header.php";
+require_once "components/header/header.php";
 ?>
 
 <div id="content">

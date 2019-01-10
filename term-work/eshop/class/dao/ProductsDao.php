@@ -151,6 +151,48 @@ class ProductsDao
             }
         }
     }
+
+    public function searchProducts($keyword)
+    {
+        $stmt = $this->conn->prepare("
+          SELECT * 
+              FROM products 
+              WHERE 
+                  name LIKE concat('%',:keyword,'%') OR 
+                  description LIKE concat('%',:keyword,'%') OR 
+                  brand LIKE concat('%',:keyword,'%') OR
+                  category LIKE concat('%',:keyword,'%')
+              ORDER BY created DESC");
+        $stmt->bindParam(":keyword", $keyword);
+        $stmt->execute();
+        $array = $stmt->fetchAll(PDO::FETCH_CLASS, 'Product');
+        foreach ($array as $product) {
+            $product->setCosts($this->getCostsOfProduct($product->getId()));
+        }
+        return $array;
+    }
+
+    public function searchProductsWithBrand($keyword, $brand)
+    {
+        $stmt = $this->conn->prepare("
+          SELECT * 
+              FROM products 
+              WHERE 
+                  brand=:brand AND (
+                  name LIKE concat('%',:keyword,'%') OR 
+                  description LIKE concat('%',:keyword,'%') OR 
+                  category LIKE concat('%',:keyword,'%')
+                  )
+              ORDER BY created DESC");
+        $stmt->bindParam(":keyword", $keyword);
+        $stmt->bindParam(":brand", $brand);
+        $stmt->execute();
+        $array = $stmt->fetchAll(PDO::FETCH_CLASS, 'Product');
+        foreach ($array as $product) {
+            $product->setCosts($this->getCostsOfProduct($product->getId()));
+        }
+        return $array;
+    }
 }
 
 ?>

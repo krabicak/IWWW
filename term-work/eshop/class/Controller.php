@@ -8,6 +8,7 @@ class Controller
     private $productsDao;
     static private $instance = NULL;
     static private $auth = NULL;
+    static private $basket = NULL;
 
     static function getInstance()
     {
@@ -25,6 +26,7 @@ class Controller
         $this->categoryDao = new CategoryDao(Connection::getPdoInstance());
         $this->productsDao = new ProductsDao(Connection::getPdoInstance());
         static::$auth = Authentication::getInstance();
+        static::$basket = BasketHelper::getInstance();
     }
 
     public function login()
@@ -64,18 +66,15 @@ class Controller
 
     public function navigation()
     {
-        if (isset($_GET["q"])) {
-            require_once "page/search-page.php";
-        } else
-            if (isset($_GET["page"])) {
-                if (file_exists("page/" . $_GET["page"] . ".php")) {
-                    require_once "page/" . $_GET["page"] . ".php";
-                } else {
-                    header("location:" . BASE_URL . "?page=products");
-                }
+        if (isset($_GET["page"])) {
+            if (file_exists("page/" . $_GET["page"] . ".php")) {
+                require_once "page/" . $_GET["page"] . ".php";
             } else {
                 header("location:" . BASE_URL . "?page=products");
             }
+        } else {
+            header("location:" . BASE_URL . "?page=products");
+        }
     }
 
     private function showUsers($users)
@@ -275,12 +274,12 @@ class Controller
     {
         function costDESC($a, $b)
         {
-            return $a->getCost() > $b->getCost();
+            return $a->getCost() < $b->getCost();
         }
 
         function costASC($a, $b)
         {
-            return $a->getCost() < $b->getCost();
+            return $a->getCost() > $b->getCost();
         }
 
         function createdDESC($a, $b)
@@ -409,10 +408,8 @@ class Controller
         return $this->categoryDao->getAllCategories();
     }
 
-    public function showOptionBox()
+    public function showFilter()
     {
-        echo '<div id="search-by"><form method="post">Brand: <select name="brand">';
-        echo '<option value=""></option>';
         foreach (Controller::getInstance()->getAllBrands() as $brand) {
             echo "<option value='" . $brand->getBrand() . "'";
             if (isset($_POST["action"]) && $_POST["action"] == "show-by-filters" && $_POST["brand"] == $brand->getBrand()) echo "selected='selected'";
@@ -429,8 +426,30 @@ class Controller
         echo '>Highest price</option><option value = "createdASC"';
         if (isset($_POST["sort"]) && $_POST["sort"] == "createdASC") echo 'selected="selected"';
         echo '>Oldest</option>';
-        echo '</select><button id="show-by-filters-button" type="submit" name="action" value="show-by-filters">Show</button></form>';
-        echo '</div >';
+    }
+
+    public function showResults()
+    {
+        echo '<h2>Results for "' . $_GET["q"] . '":</h2>';
+    }
+
+    public function searchProducts()
+    {
+        if (isset($_GET["q"])) {
+            if (isset($_POST["action"]) && $_POST["action"] == "show-by-filters" && !$_POST["brand"] == "") {
+                $this->showProducts($this->productsDao->searchProductsWithBrand($_GET["q"], $_POST["brand"]));
+            } else
+                $this->showProducts($this->productsDao->searchProducts($_GET["q"]));
+        }
+    }
+
+    public function addProductToBasket()
+    {
+        $arr = $this->productsDao->getProductById($_POST["add-to-basket"]);
+        if (isset($arr[0])) {
+            static::$basket->addProduct($arr[0]);
+            echo "<script>alert('Product " . $arr[0]->getName() . " added to your basket!')</script>";
+        }
     }
 }
 

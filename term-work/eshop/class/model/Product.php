@@ -53,7 +53,7 @@ class Product
      */
     public function getCost()
     {
-        return $this->costs[0];
+        return $this->costs[0]->getCost();
     }
 
     /**
@@ -203,11 +203,12 @@ class Product
 
     public function show()
     {
-        $string = '<form method="post" class="product-box" onclick="javascript:document.location.href =\'' . BASE_URL . '?page=detail&product=' . $this->id . '\';return false;">';
+        $string = '<form method="post" class="product-box" onclick="javascript:document.location.href =\'' . BASE_URL . '?page=detail&product=' . $this->id . '\'">';
         $string .= '<h2>' . $this->name . '</h2>';
         $string .= '<img width="60%" src="' . $this->image . '" alt="' . $this->name . '">';
         $string .= '<div class="description"><h3>' . $this->costs[0]->getCost() . ' Kč</h3>';
-        $string .= '<button type = "submit" name = "add-to-basket" value = " . $product->getId() . ">Add to basket</button>';
+        $string .= '<h3>stock: '.$this->stock.'</h3>';
+        $string .= '<button type = "submit" name = "add-to-basket" value = "' . $this->id . '">Add to basket</button>';
         $string .= '</div> ';
         $string .= '</form >';
         return $string;
