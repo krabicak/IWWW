@@ -31,18 +31,38 @@ class BasketHelper
 
     public static function getProducts()
     {
-        return static::$basket;
+        return self::$basket;
     }
 
     public static function addProduct($product)
     {
-        static::$basket[self::getSize()] = $product;
-        $_SESSION['basket'] = static::$basket;
+        self::$basket[self::getSize()] = $product->getId();
+        $_SESSION['basket'] = self::$basket;
+    }
+
+    public static function removeProduct($product)
+    {
+        $newBasket = NULL;
+        $deleted = false;
+        foreach (self::$basket as $item) {
+            if ($item != $product || $deleted) {
+                $newBasket[self::size($newBasket)] = $item;
+            } elseif ($item == $product) {
+                $deleted = !$deleted;
+            }
+        }
+        $_SESSION['basket'] = $newBasket;
     }
 
     public static function getSize()
     {
-        if (static::$basket == NULL) return 0;
-        return sizeof(static::$basket);
+        if (self::$basket == NULL) return 0;
+        return sizeof(self::$basket);
+    }
+
+    private static function size($array)
+    {
+        if ($array == NULL) return 0;
+        return sizeof($array);
     }
 }

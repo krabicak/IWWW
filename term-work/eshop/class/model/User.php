@@ -156,8 +156,9 @@ class User
             $string .= ">" . $role->getRole() . "</option>";
         }
         $string .= "</select></td>";
-        $string .= "<td><button name='action' value='remove-user:$this->id' type='submit'>delete</button>";
-        $string .= "<button name='action' value='update-user:$this->id' type='submit'>update</button></td>";
+        $string .= "<input type='hidden' name='id' value='$this->id'>";
+        $string .= "<td><button name='action' value='remove-user' type='submit'>delete</button>";
+        $string .= "<button name='action' value='update-user' type='submit'>update</button></td>";
         $string .= "</form></tr>";
         return $string;
     }

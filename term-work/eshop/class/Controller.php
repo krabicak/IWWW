@@ -34,9 +34,9 @@ class Controller
         if (isset($_POST["login-email"]) && $_POST["password"]) {
             if (filter_var($_POST["login-email"], FILTER_VALIDATE_EMAIL)) {
                 if (static::$auth->login($_POST["login-email"], $_POST["password"])) {
-                    echo "<meta http-equiv='refresh' content='0'>";
+                    header("Refresh:0");
                 } else {
-                    echo "<script>alert('User not found!')</script>";
+                    echo "<script>$(document).ready(function(){alert('User not found!');});</script>";
                 }
             }
         }
@@ -95,18 +95,12 @@ class Controller
                 $users = $this->userDao->getByEmail($_POST["email"]);
                 echo "<h2>Users by email</h2>";
                 $this->showUsers($users);
-
-            } else {
-                $user = explode(':', $_POST["action"], 2);
-                if ($user[0] == 'remove-user') {
-                    $this->userDao->deleteUser($user[1]);
-                    unset($_POST["action"]);
-                    header("Refresh:0");
-                } elseif ($user[0] == 'update-user') {
-                    $this->userDao->updateUser($user[1], $_POST["email"], $_POST["role"], $_POST["first-name"], $_POST["last-name"], $_POST["address"]);
-                    unset($_POST["action"]);
-                    header("Refresh:0");
-                }
+            } elseif ($_POST["action"] == 'remove-user') {
+                $this->userDao->deleteUser($_POST["id"]);
+                header("Refresh:0");
+            } elseif ($_POST["action"] == 'update-user') {
+                $this->userDao->updateUser($_POST["id"], $_POST["email"], $_POST["role"], $_POST["first-name"], $_POST["last-name"], $_POST["address"]);
+                header("Refresh:0");
             }
         } else {
             $users = $this->userDao->getAllUsers();
@@ -120,9 +114,9 @@ class Controller
             if (filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
                 if ($_POST["password"] == $_POST["password"]) {
                     $this->userDao->addUser($_POST['email'], 'user', password_hash($_POST['password'], PASSWORD_BCRYPT));
-                    echo "<script>alert('User registered!')</script>";
-                } else echo "<script>alert('Passwords doesn\'t match')</script>";
-            } else echo "<script>alert('Bad email')</script>";
+                    echo "<script>$(document).ready(function(){alert('User registered!');});</script>";
+                } else echo "<script>$(document).ready(function(){alert('Passwords doesn\'t match');});</script>";
+            } else echo "<script>$(document).ready(function(){alert('Bad email');});</script>";
         }
     }
 
@@ -144,21 +138,15 @@ class Controller
                 $brands = $this->brandsDao->getByBrand($_POST["brand"]);
                 echo "<h2>Brands by name</h2>";
                 $this->showBrands($brands);
-            } else {
-                $brand = explode(':', $_POST["action"], 2);
-                if ($brand[0] == 'remove-brand') {
-                    $this->brandsDao->deleteBrand($brand[1]);
-                    unset($_POST["action"]);
-                    header("Refresh:0");
-                } elseif ($brand[0] == 'update-brand') {
-                    $this->brandsDao->updateBrand($brand[1], $_POST["brand"]);
-                    unset($_POST["action"]);
-                    header("Refresh:0");
-                } elseif ($brand[0] == 'add-brand') {
-                    $this->brandsDao->addBrand($_POST["brand"]);
-                    unset($_POST["action"]);
-                    header("Refresh:0");
-                }
+            } elseif ($_POST["action"] == 'remove-brand') {
+                $this->brandsDao->deleteBrand($_POST["id"]);
+                header("Refresh:0");
+            } elseif ($_POST["action"] == 'update-brand') {
+                $this->brandsDao->updateBrand($_POST["id"], $_POST["brand"]);
+                header("Refresh:0");
+            } elseif ($_POST["action"] == 'add-brand') {
+                $this->brandsDao->addBrand($_POST["brand"]);
+                header("Refresh:0");
             }
         } else {
             $brands = $this->brandsDao->getAllBrands();
@@ -184,21 +172,15 @@ class Controller
                 $categories = $this->categoryDao->getByCategories($_POST["category"]);
                 echo "<h2>Categories by name</h2>";
                 $this->showCategories($categories);
-            } else {
-                $category = explode(':', $_POST["action"], 2);
-                if ($category[0] == 'remove-category') {
-                    $this->categoryDao->deleteCategory($category[1]);
-                    unset($_POST["action"]);
-                    header("Refresh:0");
-                } elseif ($category[0] == 'update-category') {
-                    $this->categoryDao->updateCategory($category[1], $_POST["category"]);
-                    unset($_POST["action"]);
-                    header("Refresh:0");
-                } elseif ($category[0] == 'add-category') {
-                    $this->categoryDao->addCategory($_POST["category"]);
-                    unset($_POST["action"]);
-                    header("Refresh:0");
-                }
+            } elseif ($_POST["action"] == 'remove-category') {
+                $this->categoryDao->deleteCategory($_POST["id"]);
+                header("Refresh:0");
+            } elseif ($_POST["action"] == 'update-category') {
+                $this->categoryDao->updateCategory($_POST["id"], $_POST["category"]);
+                header("Refresh:0");
+            } elseif ($_POST["action"] == 'add-category') {
+                $this->categoryDao->addCategory($_POST["category"]);
+                header("Refresh:0");
             }
         } else {
             $categories = $this->categoryDao->getAllCategories();
@@ -214,63 +196,72 @@ class Controller
         }
     }
 
-    public function getLoggedUserFirstName()
+    public
+    function getLoggedUserFirstName()
     {
         if ($this->isUserLogged()) {
             return static::$auth->getIdentity()->getFirstName();
         }
     }
 
-    public function getLoggedUserLastName()
+    public
+    function getLoggedUserLastName()
     {
         if ($this->isUserLogged()) {
             return static::$auth->getIdentity()->getLastName();
         }
     }
 
-    public function getLoggedUserEmail()
+    public
+    function getLoggedUserEmail()
     {
         if ($this->isUserLogged()) {
             return static::$auth->getIdentity()->getEmail();
         }
     }
 
-    public function getLoggedUserAddress()
+    public
+    function getLoggedUserAddress()
     {
         if ($this->isUserLogged()) {
             return static::$auth->getIdentity()->getAddress();
         }
     }
 
-    public function getLoggedUserName()
+    public
+    function getLoggedUserName()
     {
         if ($this->getLoggedUserFirstName() . ' ' . $this->getLoggedUserLastName() == " ") {
             return $this->getLoggedUserEmail();
         } else return $this->getLoggedUserFirstName() . ' ' . $this->getLoggedUserLastName();
     }
 
-    public function changeUser()
+    public
+    function changeUser()
     {
         if (isset($_POST["action"])) {
             if ($_POST["action"] == "save") {
                 $this->userDao->updateUser(static::$auth->getIdentity()->getId(), $_POST["email"], static::$auth->getIdentity()->getRole(),
                     $_POST["first-name"], $_POST["last-name"], $_POST["address"]);
                 static::$auth->reload();
+                echo "<script>$(document).ready(function(){alert('Saved.');});</script>";
             } elseif ($_POST["action"] == "change") {
                 if (static::$auth->isPasswordCorrect($_POST["actual-password"])) {
                     if (strlen($_POST["new-password"]) > 8) {
                         if ($_POST["new-password"] == $_POST["new-password-again"]) {
                             $this->userDao->changePassword(static::$auth->getIdentity()->getId(), password_hash($_POST['new-password'], PASSWORD_BCRYPT));
                             static::$auth->reload();
-                        } else echo "<script>alert(\"Passwords do not match\")</script>";
-                    } else echo "<script>alert(\"Password is too short\")</script>";
-                } else echo "<script>alert(\"Bad password\")</script>";
+                            echo "<script>$(document).ready(function(){alert('Password changed');});</script>";
+                        } else echo "<script>$(document).ready(function(){alert('Passwords do not match');});</script>";
+                    } else echo "<script>$(document).ready(function(){alert('Password is too short');});</script>";
+                } else echo "<script>$(document).ready(function(){alert('Bad password');});</script>";
             }
             unset($_POST["action"]);
         }
     }
 
-    private function showProducts($products)
+    private
+    function showProducts($products)
     {
         function costDESC($a, $b)
         {
@@ -303,7 +294,8 @@ class Controller
             }
     }
 
-    public function showAllProducts()
+    public
+    function showAllProducts()
     {
         if (isset($_POST["action"]) && $_POST["action"] == "show-by-filters" && !$_POST["brand"] == "") {
             $this->showProducts($this->productsDao->getProductsByBrand($_POST["brand"]));
@@ -312,7 +304,8 @@ class Controller
 
     }
 
-    public function showProductsByCategory()
+    public
+    function showProductsByCategory()
     {
         if (isset($_POST["action"]) && $_POST["action"] == "show-by-filters" && !$_POST["brand"] == "") {
             $this->showProducts($this->productsDao->getProductsByCategoryAndBrand($_GET["category"], $_POST["brand"]));
@@ -320,7 +313,8 @@ class Controller
             $this->showProducts($this->productsDao->getProductsByCategory($_GET["category"]));
     }
 
-    private function showProductsOfManagement($brands, $categories, $products)
+    private
+    function showProductsOfManagement($brands, $categories, $products)
     {
         echo "<table>";
         echo "<tr><td>id</td><td>created</td><td>name</td><td>brand</td><td>category</td><td>stock</td><td>image link</td><td>cost</td><td>actions</td></tr>";
@@ -347,7 +341,8 @@ class Controller
         echo "</table>";
     }
 
-    public function productsManagement()
+    public
+    function productsManagement()
     {
 
         $categories = $this->categoryDao->getAllCategories();
@@ -355,24 +350,21 @@ class Controller
         $products = $this->productsDao->getAllProducts();
 
         if (isset($_POST["action"])) {
-            $product = explode(':', $_POST["action"], 2);
-            if ($product[0] == "upload-image") {
+            if ($_POST["action"] == "upload-image") {
                 ImageHelper::uploadFile();
-            } elseif ($product[0] == "edit-description") {
-                header("location: " . BASE_URL . "?page=edit-description&product=" . $product[1]);
-            } elseif ($product[0] == "by-id") {
+            } elseif ($_POST["action"] == "edit-description") {
+                header("location: " . BASE_URL . "?page=edit-description&product=" . $_POST["id"]);
+            } elseif ($_POST["action"] == "by-id") {
                 echo "<h2>Product by id</h2>";
                 $products = $this->productsDao->getProductById($_POST["id"]);
-            } elseif ($product[0] == "by-name") {
+            } elseif ($_POST["action"] == "by-name") {
                 echo "<h2>Products by name</h2>";
                 $products = $this->productsDao->getProductsByName($_POST["name"]);
-            } elseif ($product[0] == "add-product") {
+            } elseif ($_POST["action"] == "add-product") {
                 $this->productsDao->addProduct($_POST["product"], $_POST["image-link"], $_POST["stock"], $_POST["brand"], $_POST["category"], $_POST["cost"]);
-                unset($_POST["action"]);
                 header("Refresh:0");
-            } elseif ($product[0] == "update-product") {
-                $this->productsDao->updateProduct($product[1], $_POST["name"], $_POST["image-link"], $_POST["stock"], $_POST["brand"], $_POST["category"], $_POST["cost"]);
-                unset($_POST["action"]);
+            } elseif ($_POST["action"] == "update-product") {
+                $this->productsDao->updateProduct($_POST["id"], $_POST["name"], $_POST["image-link"], $_POST["stock"], $_POST["brand"], $_POST["category"], $_POST["cost"]);
                 header("Refresh:0");
             }
         }
@@ -381,14 +373,16 @@ class Controller
 
     }
 
-    public function getDescriptionOfProduct($id)
+    public
+    function getDescriptionOfProduct($id)
     {
         if (isset($this->productsDao->getProductById($id)[0])) {
             return $this->productsDao->getProductById($id)[0]->getDescription();
         } else return "";
     }
 
-    public function editDescription()
+    public
+    function editDescription()
     {
         if (isset($_POST["action"])) {
             if ($_POST["action"] == "save-description") {
@@ -398,19 +392,22 @@ class Controller
         }
     }
 
-    public function getAllBrands()
+    public
+    function getAllBrands()
     {
         return $this->brandsDao->getAllBrands();
     }
 
-    public function getAllCategories()
+    public
+    function getAllCategories()
     {
         return $this->categoryDao->getAllCategories();
     }
 
-    public function showFilter()
+    public
+    function showFilter()
     {
-        foreach (Controller::getInstance()->getAllBrands() as $brand) {
+        foreach ($this->getAllBrands() as $brand) {
             echo "<option value='" . $brand->getBrand() . "'";
             if (isset($_POST["action"]) && $_POST["action"] == "show-by-filters" && $_POST["brand"] == $brand->getBrand()) echo "selected='selected'";
             echo ">" . $brand->getBrand() . "</option>";
@@ -428,12 +425,14 @@ class Controller
         echo '>Oldest</option>';
     }
 
-    public function showResults()
+    public
+    function showResults()
     {
         echo '<h2>Results for "' . $_GET["q"] . '":</h2>';
     }
 
-    public function searchProducts()
+    public
+    function searchProducts()
     {
         if (isset($_GET["q"])) {
             if (isset($_POST["action"]) && $_POST["action"] == "show-by-filters" && !$_POST["brand"] == "") {
@@ -443,12 +442,32 @@ class Controller
         }
     }
 
-    public function addProductToBasket()
+    public
+    function addProductToBasket()
     {
         $arr = $this->productsDao->getProductById($_POST["add-to-basket"]);
         if (isset($arr[0])) {
             static::$basket->addProduct($arr[0]);
-            echo "<script>alert('Product " . $arr[0]->getName() . " added to your basket!')</script>";
+            echo "<script>$(document).ready(function(){alert('Product " . $arr[0]->getName() . " added to your basket!');});</script>";
+        }
+    }
+
+    public
+    function basket()
+    {
+        if (isset($_POST["action"]) && $_POST["action"] == "remove-product") {
+            self::$basket->removeProduct($_POST["id"]);
+            header("Refresh:0");
+        }
+        if (static::$basket->getProducts() != null) {
+            echo "<table>";
+            echo "<tr><td></td><td>name</td><td>stock</td><td>cost</td></tr>";
+            foreach (static::$basket->getProducts() as $product) {
+                echo $this->productsDao->getProductById($product)[0]->renderInBasket();
+            }
+            echo "</table>";
+        } else {
+            echo "<h2 id='nothing-to-show'>Nothing to show</h2>";
         }
     }
 }

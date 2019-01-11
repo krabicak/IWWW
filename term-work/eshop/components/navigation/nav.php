@@ -10,7 +10,6 @@
         require_once "components/registration/registration.php";
     } else {
         echo '<a href="' . BASE_URL . '?page=my-orders">My orders</a>';
-        echo '<a href="' . BASE_URL . '?page=log-out">Log out</a>';
         if (Controller::getInstance()->isUserManager()) {
             echo "<h2>Management</h2>";
             echo '<a href="' . BASE_URL . '?page=orders-management">Orders</a>';

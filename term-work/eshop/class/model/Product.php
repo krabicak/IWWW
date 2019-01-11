@@ -207,7 +207,7 @@ class Product
         $string .= '<h2>' . $this->name . '</h2>';
         $string .= '<img width="60%" src="' . $this->image . '" alt="' . $this->name . '">';
         $string .= '<div class="description"><h3>' . $this->costs[0]->getCost() . ' Kč</h3>';
-        $string .= '<h3>stock: '.$this->stock.'</h3>';
+        $string .= '<h3>stock: ' . $this->stock . '</h3>';
         $string .= '<button type = "submit" name = "add-to-basket" value = "' . $this->id . '">Add to basket</button>';
         $string .= '</div> ';
         $string .= '</form >';
@@ -237,8 +237,22 @@ class Product
         $string .= "<td><input type='text' name='stock' value='$this->stock'></td>";
         $string .= "<td><input type='text' name='image-link' value='$this->image'></td>";
         $string .= "<td><input type='text' name='cost' value='" . $this->costs[0]->getCost() . "'></td>";
-        $string .= "<td><button name='action' value='edit-description:$this->id' type='submit'>edit description</button>";
-        $string .= "<button name='action' value='update-product:$this->id' type='submit'>update</button></td>";
+        $string .= "<input type='hidden' name='id' value='$this->id'>";
+        $string .= "<td><button name='action' value='edit-description' type='submit'>edit description</button>";
+        $string .= "<button name='action' value='update-product' type='submit'>update</button></td>";
+        $string .= "</form></tr>";
+        return $string;
+    }
+
+    public function renderInBasket()
+    {
+        $string = "<tr><form method='post'>";
+        $string .= "<input type='hidden' name='id' value='$this->id'>";
+        $string .= "<td><img width='35px' src='$this->image'></td>";
+        $string .= "<td><a href='" . BASE_URL . "?page=detail&product=$this->id'>$this->name</td>";
+        $string .= "<td>$this->stock</td>";
+        $string .= "<td>" . $this->costs[0]->getCost() . " Kč</td>";
+        $string .= "<td><button name='action' value='remove-product' type='submit'>remove</button></td>";
         $string .= "</form></tr>";
         return $string;
     }

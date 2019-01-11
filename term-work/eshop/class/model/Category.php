@@ -31,8 +31,9 @@ class Category
     {
         $string = "<tr><form method='post'>";
         $string .= "<td><input type='text' name='category' value='$this->category'></td>";
-        $string .= "<td><button name='action' value='remove-category:$this->category' type='submit'>delete</button>";
-        $string .= "<button name='action' value='update-category:$this->category' type='submit'>update</button></td>";
+        $string .= "<input type='hidden' name='id' value='$this->category'>";
+        $string .= "<td><button name='action' value='remove-category' type='submit'>delete</button>";
+        $string .= "<button name='action' value='update-category' type='submit'>update</button></td>";
         $string .= "</form></tr>";
         return $string;
     }

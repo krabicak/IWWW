@@ -24,8 +24,9 @@ class Brand
     {
         $string = "<tr><form method='post'>";
         $string .= "<td><input type='text' name='brand' value='$this->brand'></td>";
-        $string .= "<td><button name='action' value='remove-brand:$this->brand' type='submit'>delete</button>";
-        $string .= "<button name='action' value='update-brand:$this->brand' type='submit'>update</button></td>";
+        $string .= "<input type='hidden' name='id' value='$this->brand'>";
+        $string .= "<td><button name='action' value='remove-brand' type='submit'>delete</button>";
+        $string .= "<button name='action' value='update-brand' type='submit'>update</button></td>";
         $string .= "</form></tr>";
         return $string;
     }

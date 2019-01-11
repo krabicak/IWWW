@@ -1,7 +1,7 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: hotov
- * Date: 10.01.2019
- * Time: 17:52
- */
+<div id="basket">
+    <h1>Basket</h1>
+
+    <?php
+    Controller::getInstance()->basket();
+    ?>
+</div>
