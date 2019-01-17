@@ -6,6 +6,7 @@ class Controller
     private $brandsDao;
     private $categoryDao;
     private $productsDao;
+    private $ordersDao;
     static private $instance = NULL;
     static private $auth = NULL;
     static private $basket = NULL;
@@ -25,6 +26,7 @@ class Controller
         $this->brandsDao = new BrandsDao(Connection::getPdoInstance());
         $this->categoryDao = new CategoryDao(Connection::getPdoInstance());
         $this->productsDao = new ProductsDao(Connection::getPdoInstance());
+        $this->ordersDao = new OrdersDao(Connection::getPdoInstance());
         static::$auth = Authentication::getInstance();
         static::$basket = BasketHelper::getInstance();
     }
@@ -201,6 +203,14 @@ class Controller
     {
         if ($this->isUserLogged()) {
             return static::$auth->getIdentity()->getFirstName();
+        }
+    }
+
+    public
+    function getLoggedUserId()
+    {
+        if ($this->isUserLogged()) {
+            return static::$auth->getIdentity()->getId();
         }
     }
 
@@ -455,19 +465,59 @@ class Controller
     public
     function basket()
     {
-        if (isset($_POST["action"]) && $_POST["action"] == "remove-product") {
-            self::$basket->removeProduct($_POST["id"]);
-            header("Refresh:0");
+        if (isset($_POST["action"])) {
+            if ($_POST["action"] == "remove-product") {
+                self::$basket->removeProduct($_POST["id"]);
+                header("Refresh:0");
+            } elseif ($_POST["action"] == "buy") {
+                $sum = 0;
+                foreach (static::$basket->getProducts() as $id) {
+                    $product = $this->productsDao->getProductById($id)[0];
+                    $sum += $product->getCost();
+                    echo $product->renderInBasket();
+                }
+                $this->ordersDao->addOrder($_POST["info"],
+                    $_POST["first-name"] . " " . $_POST["last-name"] . ", " . $_POST["address"],
+                    State::getProcessing()->getState(), $this->getLoggedUserId(),
+                    static::$basket->getProducts(), $sum);
+                self::$basket->removeAllProducts();
+                echo "<script>alert('Order successfully created!')</script>";
+                header("Refresh:0");
+            }
         }
         if (static::$basket->getProducts() != null) {
+            $sum = 0;
             echo "<table>";
-            echo "<tr><td></td><td>name</td><td>stock</td><td>cost</td></tr>";
-            foreach (static::$basket->getProducts() as $product) {
-                echo $this->productsDao->getProductById($product)[0]->renderInBasket();
+            echo "<tr><td></td><td>name</td><td class='right'>stock</td><td class='right'>cost</td></tr>";
+            foreach (static::$basket->getProducts() as $id) {
+                $product = $this->productsDao->getProductById($id)[0];
+                $sum += $product->getCost();
+                echo $product->renderInBasket();
             }
+            echo "<tr><td></td><td></td><td>Total: </td><td class='total'>$sum Kč</td></tr>";
             echo "</table>";
         } else {
             echo "<h2 id='nothing-to-show'>Nothing to show</h2>";
+        }
+    }
+
+    public function isBasketEmpty()
+    {
+        return self::$basket->getSize() == 0;
+    }
+
+    public function myOrders()
+    {
+        if (isset($_POST["action"])) {
+            if ($_POST["action"] == "cancel-order") {
+                $this->ordersDao->cancelOrder($_POST["id"]);
+            }
+        }
+        $orders = $this->ordersDao->getAllOrdersByUser($this->getLoggedUserId(), $this->productsDao);
+        foreach ($orders as $order) {
+            echo "<form method='post'><table>";
+            echo $order->renderInMyOrders($this->ordersDao->getCostsIdOrder($order->getId()));
+            echo "</table></form>";
         }
     }
 }

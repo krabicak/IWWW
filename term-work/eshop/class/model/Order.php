@@ -1,14 +1,34 @@
 <?php
 
-class Order{
+class Order
+{
 
-  private $id;
-  private $info;
-  private $address;
-  private $state;
-  private $usersId;
+    private $id;
+    private $info;
+    private $address;
+    private $state;
+    private $usersId;
+    private $cost;
+    private $created;
 
-  private $products;
+    private $products;
+    private $states;
+
+    /**
+     * @return mixed
+     */
+    public function getCost()
+    {
+        return $this->cost;
+    }
+
+    /**
+     * @param mixed $cost
+     */
+    public function setCost($cost)
+    {
+        $this->cost = $cost;
+    }
 
     /**
      * @return mixed
@@ -104,5 +124,63 @@ class Order{
     public function setProducts($products)
     {
         $this->products = $products;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStates()
+    {
+        return $this->states;
+    }
+
+    /**
+     * @param mixed $states
+     */
+    public function setStates($states)
+    {
+        $this->states = $states;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param mixed $created
+     */
+    public function setCreated($created)
+    {
+        $this->created = $created;
+    }
+
+
+    public function renderInMyOrders($costs)
+    {
+        $string = "<tr><td>id: $this->id</td><td>$this->created</td><td>$this->address</td></tr>";
+        foreach ($this->products as $product) {
+            $string .= $product->renderInOrder($costs);
+        }
+        $string .= "<tr><td colspan='3'>$this->info</td></tr>";
+        $string .= "<tr><td></td><td>state: $this->state</td><td class='right' class='total'>Total: $this->cost Kč";
+        $string .= "<input type='hidden' name='id' value='$this->id'></td>";
+        if ($this->state == 'processing') {
+            $string .= "<td><button name='action' value='cancel-order' type='submit'>cancel</button></td>";
+        }
+        $string .= "</tr>";
+        return $string;
+    }
+
+    public function render()
+    {
+        $string = "<tr><form method='post'>";
+        $string .= "<td>$this->id</td>";
+
+        $string .= "</form></tr>";
+        return $string;
     }
 }

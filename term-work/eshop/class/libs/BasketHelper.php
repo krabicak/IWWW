@@ -54,6 +54,12 @@ class BasketHelper
         $_SESSION['basket'] = $newBasket;
     }
 
+    public function removeAllProducts()
+    {
+        self::$basket = NULL;
+        $_SESSION['basket'] = NULL;
+    }
+
     public static function getSize()
     {
         if (self::$basket == NULL) return 0;

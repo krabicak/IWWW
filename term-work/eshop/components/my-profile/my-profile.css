@@ -1,23 +1,19 @@
-@media only screen and (min-width: 601px) {
-    #my-profile {
-    }
-}
-
 #my-profile {
-
+    margin: auto;
     display: grid;
     padding-left: 20px;
     padding-top: 20px;
     padding-right: 20px;
 }
 
-#my-profile table input[type=text]{
+#my-profile table input[type=text] {
     width: 98%;
 }
 
-#my-profile #search_by_email{
+#my-profile #search_by_email {
     display: inline-block;
 }
+
 #my-profile h1 {
     font-size: 30px;
 }
@@ -29,4 +25,15 @@
 #my-profile td {
     text-align: left;
     border: 1px #8d8d8d;
+}
+
+@media only screen and (min-width: 601px) {
+    #my-profile > .container > form {
+        flex-grow: 1;
+        flex-basis: fit-content;
+    }
+}
+
+#my-profile > .container > form > * {
+    margin: 5px;
 }

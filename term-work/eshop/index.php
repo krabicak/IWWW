@@ -33,7 +33,7 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-shop Petr Hotovec</title>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
     <link rel="stylesheet" href="Trumbowyg/dist/ui/trumbowyg.min.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="components/header/header.css">

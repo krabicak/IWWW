@@ -1,10 +1,28 @@
 <?php
 
 
-class Cost {
+class Cost
+{
 
-  private $created;
-  private $cost;
+    private $id;
+    private $created;
+    private $cost;
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
     /**
      * @return mixed
@@ -37,7 +55,6 @@ class Cost {
     {
         $this->cost = $cost;
     }
-
 
 
 }

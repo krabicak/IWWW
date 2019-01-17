@@ -69,6 +69,30 @@ class ProductsDao
         return $array;
     }
 
+    public function getProductsByOrderId($id)
+    {
+        $stmt = $this->conn->prepare("SELECT 
+            products.id,
+            products.created,
+            products.name,
+            products.description,
+            products.image,
+            products.stock,
+            products.brand,
+            products.category
+            FROM products 
+          JOIN costs on products.id = costs.product 
+          JOIN orders_has_products on costs.id = orders_has_products.costs_id 
+          WHERE orders_has_products.orders_id=:id ORDER BY products.created DESC");
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+        $array = $stmt->fetchAll(PDO::FETCH_CLASS, 'Product');
+        foreach ($array as $product) {
+            $product->setCosts($this->getCostsOfProduct($product->getId()));
+        }
+        return $array;
+    }
+
     public function getProductsByName($name)
     {
         $stmt = $this->conn->prepare("SELECT * FROM products WHERE name LIKE concat('%',:name,'%') ORDER BY created DESC");
@@ -83,7 +107,7 @@ class ProductsDao
 
     private function getCostsOfProduct($product)
     {
-        $stmt = $this->conn->prepare("SELECT created,cost FROM costs WHERE product=:product ORDER BY created DESC");
+        $stmt = $this->conn->prepare("SELECT * FROM costs WHERE product=:product ORDER BY created DESC");
         $stmt->bindParam(":product", $product);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_CLASS, 'Cost');

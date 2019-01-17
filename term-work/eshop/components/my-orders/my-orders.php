@@ -1,7 +1,7 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: hotov
- * Date: 10.01.2019
- * Time: 17:46
- */
+<section id="my-orders">
+    <h1>My orders</h1>
+
+    <div class="container">
+        <?php Controller::getInstance()->myOrders(); ?>
+    </div>
+</section>

@@ -14,6 +14,10 @@ p {
         display: flex;
         flex-wrap: wrap;
     }
+
+    .container > form, .container > div {
+        width: 100%;
+    }
 }
 
 @media only screen and (min-width: 601px) {
@@ -25,5 +29,20 @@ p {
 #content main {
     display: flex;
     flex-wrap: wrap;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.container > form, .container > div {
+    border: #333333 1px solid;
+    margin: 5px;
+}
+
+.total {
+    color: red;
+    font-size: 18px;
 }
 

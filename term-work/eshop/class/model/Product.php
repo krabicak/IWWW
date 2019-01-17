@@ -209,8 +209,8 @@ class Product
         $string .= '<div class="description"><h3>' . $this->costs[0]->getCost() . ' Kč</h3>';
         $string .= '<h3>stock: ' . $this->stock . '</h3>';
         $string .= '<button type = "submit" name = "add-to-basket" value = "' . $this->id . '">Add to basket</button>';
-        $string .= '</div> ';
-        $string .= '</form >';
+        $string .= '</div>';
+        $string .= "</form>\n";
         return $string;
     }
 
@@ -250,10 +250,29 @@ class Product
         $string .= "<input type='hidden' name='id' value='$this->id'>";
         $string .= "<td><img width='35px' src='$this->image'></td>";
         $string .= "<td><a href='" . BASE_URL . "?page=detail&product=$this->id'>$this->name</td>";
-        $string .= "<td>$this->stock</td>";
-        $string .= "<td>" . $this->costs[0]->getCost() . " Kč</td>";
+        $string .= "<td class='right'>$this->stock</td>";
+        $string .= "<td class='right'>" . $this->costs[0]->getCost() . " Kč</td>";
         $string .= "<td><button name='action' value='remove-product' type='submit'>remove</button></td>";
         $string .= "</form></tr>";
+        return $string;
+    }
+
+    public function renderInOrder($costsId)
+    {
+        $string = "<tr>";
+        $string .= "<td><img width='35px' src='$this->image'></td>";
+        $string .= "<td><a href='" . BASE_URL . "?page=detail&product=$this->id'>$this->name</a></td>";
+        $string .= "<td class='right'>";
+        foreach ($this->costs as $cos) {
+            foreach ($costsId as $c) {
+                if ($cos->getId() == $c["costs_id"]) {
+                    $string .= $cos->getCost();
+                    break;
+                }
+            }
+        }
+        $string .= " Kč</td>";
+        $string .= "</tr>";
         return $string;
     }
 
