@@ -2,7 +2,7 @@
 if (isset($_POST["add-to-basket"])) {
     if (Controller::getInstance()->isUserLogged()) Controller::getInstance()->addProductToBasket();
     else echo "<script>$(document).ready(function(){
-                        alert('Please login or register');
+                        alert('Nejprve se musíte přihlásit');
                     });</script>";
 }
 if (isset($_GET["category"])) Controller::getInstance()->showProductsByCategory();

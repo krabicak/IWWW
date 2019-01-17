@@ -1,8 +1,8 @@
 <div id="user-management">
-    <h1>Users</h1>
+    <h1>Uživatelé</h1>
     <form id="search_by_email" method='post'>
         <input type='email' name='email'>
-        <input type='submit' name='action' value='by-email'>
+        <button type='submit' name='action' value='by-email'>Vyhledat</button>
     </form>
     <br>
 

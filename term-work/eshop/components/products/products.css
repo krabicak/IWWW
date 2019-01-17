@@ -2,12 +2,16 @@
     width: 350px;
     height: 350px;
     margin: 5px;
-    border: #919191 solid 1px;
+    border: #333333 1px solid;
 }
 
 .product-box:hover {
     background-color: rgba(225, 203, 147, 0.55);
     cursor: pointer;
+}
+
+.product-box img{
+    width: 60%;
 }
 
 @media only screen and (max-width: 601px) {

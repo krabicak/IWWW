@@ -4,6 +4,7 @@
     padding-left: 20px;
     padding-top: 20px;
     padding-right: 20px;
+    max-width: 100%;
 }
 
 #product-management table input[type=email] {
@@ -22,7 +23,12 @@
     font-size: 30px;
 }
 
-#product-management table {
+#product-management table input{
+    width: 97%;
+}
+
+#product-management table button{
+    width: 100%;
 }
 
 #product-management td {

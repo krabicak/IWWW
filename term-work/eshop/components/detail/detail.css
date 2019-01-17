@@ -1,3 +1,35 @@
 #detail {
+    margin: 5px;
+    border: #333333 1px solid;
+    width: 100%;
+}
+
+#detail > * {
+    margin: 15px;
+}
+
+#detail #box {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#detail #box > * {
     margin: auto;
+}
+
+#detail .right {
+    text-align: right;
+}
+
+#detail img {
+    max-width: 80%;
+}
+
+#detail #box img {
+    margin: auto;
+    width: 60%;
+}
+
+#detail #description {
+    border-top: #333333 1px solid;
 }

@@ -1,5 +1,6 @@
 #content nav h2 {
-    margin-left: 5px;
+    padding: 20px 0px 0px 0px;
+    margin: 0px 0px 20px 10px;
 }
 
 #content nav a:hover {

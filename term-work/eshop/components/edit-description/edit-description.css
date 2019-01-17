@@ -1,3 +1,9 @@
 #edit-description {
     margin: auto;
+    width: 100%;
+}
+
+#edit-description form{
+    margin: 5px;
+    width: 99%;
 }

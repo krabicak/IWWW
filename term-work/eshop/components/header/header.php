@@ -7,18 +7,18 @@
                 <input type="search"
                        id="search"
                        name="q"
-                       placeholder="Search product..."
+                       placeholder="Hledat produkty..."
                        aria-label="Search through site products"
                     <?php if (isset($_GET["q"])) echo 'value="' . $_GET["q"] . '"' ?>
                 >
-                <button name='page' value='products' type='submit'>Search!</button>
+                <button name='page' value='products' type='submit'>Vyhledat</button>
             </div>
-            <a href=<?= BASE_URL . "?page=contact" ?>>Contact</a>
+            <a href=<?= BASE_URL . "?page=contact" ?>>Kontakty</a>
             <?php
             if (Controller::getInstance()->isUserLogged()) {
-                echo '<a href="' . BASE_URL . '?page=basket">Basket</a>';
+                echo '<a href="' . BASE_URL . '?page=basket">Košík</a>';
                 echo '<a href="' . BASE_URL . '?page=my-profile">' . Controller::getInstance()->getLoggedUserName() . '</a>';
-                echo '<a href="' . BASE_URL . '?page=log-out">Log out</a>';
+                echo '<a href="' . BASE_URL . '?page=log-out">Odhlásit</a>';
             }
             ?>
         </nav>

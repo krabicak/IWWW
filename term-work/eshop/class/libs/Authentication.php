@@ -25,7 +25,7 @@ class Authentication
 
     public function login($email, $password)
     {
-        $stmt = $this->conn->prepare("SELECT * FROM users WHERE email=:email");
+        $stmt = $this->conn->prepare("SELECT * FROM users WHERE email=:email AND disabled!=1");
         $stmt->bindParam(':email', $email);
         $stmt->execute();
         $user = $stmt->fetch();

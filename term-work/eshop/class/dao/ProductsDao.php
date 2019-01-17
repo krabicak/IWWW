@@ -156,16 +156,16 @@ class ProductsDao
         $this->addCost($cost, $array[0]->getId());
     }
 
-    public function updateProduct($id, $name, $image, $stock, $brand, $category, $cost)
+    public function updateProduct($id, $name, $image, $stock, $brand, $category, $cost, $disabled)
     {
-        echo $image;
-        $stmt = $this->conn->prepare("UPDATE products SET name=:name,image=:image, stock=:stock,brand=:brand,category=:category WHERE id=:id");
+        $stmt = $this->conn->prepare("UPDATE products SET name=:name,image=:image, stock=:stock,brand=:brand,category=:category,disabled=:disabled WHERE id=:id");
         $stmt->bindParam(":name", $name);
         $stmt->bindParam(":image", $image);
         $stmt->bindParam(":stock", $stock);
         $stmt->bindParam(":brand", $brand);
         $stmt->bindParam(":category", $category);
         $stmt->bindParam(":id", $id);
+        $stmt->bindParam(":disabled", $disabled);
         $stmt->execute();
 
         $oldCost = $this->getCostsOfProduct($id)[0];
@@ -180,12 +180,14 @@ class ProductsDao
     {
         $stmt = $this->conn->prepare("
           SELECT * 
-              FROM products 
+              FROM products JOIN categories on products.category = categories.category
               WHERE 
-                  name LIKE concat('%',:keyword,'%') OR 
-                  description LIKE concat('%',:keyword,'%') OR 
-                  brand LIKE concat('%',:keyword,'%') OR
-                  category LIKE concat('%',:keyword,'%')
+                  products.disabled = 0 AND
+                  categories.disabled = 0 AND (
+                  products.name LIKE concat('%',:keyword,'%') OR 
+                  products.description LIKE concat('%',:keyword,'%') OR 
+                  products.brand LIKE concat('%',:keyword,'%') OR
+                  products.category LIKE concat('%',:keyword,'%'))
               ORDER BY created DESC");
         $stmt->bindParam(":keyword", $keyword);
         $stmt->execute();
@@ -200,12 +202,14 @@ class ProductsDao
     {
         $stmt = $this->conn->prepare("
           SELECT * 
-              FROM products 
+              FROM products JOIN categories on products.category = categories.category
               WHERE 
-                  brand=:brand AND (
-                  name LIKE concat('%',:keyword,'%') OR 
-                  description LIKE concat('%',:keyword,'%') OR 
-                  category LIKE concat('%',:keyword,'%')
+                  products.disabled = 0 AND
+                  categories.disabled = 0 AND 
+                  products.brand=:brand AND (
+                  products.name LIKE concat('%',:keyword,'%') OR 
+                  products.description LIKE concat('%',:keyword,'%') OR 
+                  products.category LIKE concat('%',:keyword,'%')
                   )
               ORDER BY created DESC");
         $stmt->bindParam(":keyword", $keyword);

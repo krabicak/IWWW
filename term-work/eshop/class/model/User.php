@@ -11,6 +11,7 @@ class User
     private $last_name;
     private $address;
     private $roles;
+    private $disabled;
 
     /**
      * @return mixed
@@ -140,11 +141,27 @@ class User
         $this->roles = $roles;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getDisabled()
+    {
+        return $this->disabled;
+    }
+
+    /**
+     * @param mixed $disabled
+     */
+    public function setDisabled($disabled)
+    {
+        $this->disabled = $disabled;
+    }
+
 
     public function render()
     {
         $string = "<tr><form method='post'>";
-        $string .= "<td>$this->id</td>";
+        $string .= "<td><input type='hidden' name='id' value='$this->id'>$this->id</td>";
         $string .= "<td><input type='email' name='email' value='$this->email'></td>";
         $string .= "<td><input type='text' name='first-name' value='$this->first_name'></td>";
         $string .= "<td><input type='text' name='last-name' value='$this->last_name'></td>";
@@ -156,9 +173,12 @@ class User
             $string .= ">" . $role->getRole() . "</option>";
         }
         $string .= "</select></td>";
-        $string .= "<input type='hidden' name='id' value='$this->id'>";
-        $string .= "<td><button name='action' value='remove-user' type='submit'>delete</button>";
-        $string .= "<button name='action' value='update-user' type='submit'>update</button></td>";
+        $string .= "<td><input type='checkbox' name='disabled' value='1' ";
+        if ($this->disabled == 1) {
+            $string .= "checked";
+        }
+        $string .= "></td>";
+        $string .= "<td><button name='action' value='update-user' type='submit'>upravit</button></td>";
         $string .= "</form></tr>";
         return $string;
     }

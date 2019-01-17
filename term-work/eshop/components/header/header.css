@@ -55,7 +55,7 @@ header {
 
     header input[type=search] {
         margin-left: 2px;
-        width: calc(100% - 100px);
+        width: calc(100% - 110px);
     }
 }
 
@@ -89,7 +89,7 @@ header button {
     font-size: 18px;
     cursor: pointer;
     border: none;
-    width: 90px;
+    width: 100px;
 }
 
 header button:hover, header nav a:hover {

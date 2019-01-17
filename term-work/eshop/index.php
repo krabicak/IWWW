@@ -54,11 +54,9 @@ session_start();
     <link rel="stylesheet" type="text/css" href="components/basket/basket.css">
 </head>
 <body>
-
 <?php
 require_once "components/header/header.php";
 ?>
-
 <div id="content">
     <?php
     require_once "default/default.php";

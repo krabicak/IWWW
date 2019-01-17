@@ -13,7 +13,7 @@ final class State
     public static function getProcessing()
     {
         if (!isset(self::$processing)) {
-            self::$processing = new self('processing');
+            self::$processing = new self('příprava');
         }
         return self::$processing;
     }
@@ -21,7 +21,7 @@ final class State
     public static function getSent()
     {
         if (!isset(self::$sent)) {
-            self::$sent = new self('sent');
+            self::$sent = new self('odesláno');
         }
         return self::$sent;
     }
@@ -29,7 +29,7 @@ final class State
     public static function getCanceled()
     {
         if (!isset(self::$canceled)) {
-            self::$canceled = new self('canceled');
+            self::$canceled = new self('zrušeno');
         }
         return self::$canceled;
     }
@@ -42,9 +42,9 @@ final class State
     public static function getArray()
     {
         return [
-            "processing" => self::getProcessing(),
-            "canceled" => self::getCanceled(),
-            "sent" => self::getSent()
+            "příprava" => self::getProcessing(),
+            "zrušeno" => self::getCanceled(),
+            "odesláno" => self::getSent()
         ];
     }
 }

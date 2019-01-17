@@ -166,10 +166,10 @@ class Order
             $string .= $product->renderInOrder($costs);
         }
         $string .= "<tr><td colspan='3'>$this->info</td></tr>";
-        $string .= "<tr><td></td><td>state: $this->state</td><td class='right' class='total'>Total: $this->cost Kč";
+        $string .= "<tr><td></td><td>stav: $this->state</td><td class='right' class='total'>Celkem: $this->cost Kč";
         $string .= "<input type='hidden' name='id' value='$this->id'></td>";
-        if ($this->state == 'processing') {
-            $string .= "<td><button name='action' value='cancel-order' type='submit'>cancel</button></td>";
+        if ($this->state == State::getProcessing()->getState()) {
+            $string .= "<td><button name='action' value='cancel-order' type='submit'>zrušit</button></td>";
         }
         $string .= "</tr>";
         return $string;

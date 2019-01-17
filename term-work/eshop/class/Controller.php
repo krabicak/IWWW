@@ -11,6 +11,8 @@ class Controller
     static private $auth = NULL;
     static private $basket = NULL;
 
+    static public $product;
+
     static function getInstance()
     {
         if (self::$instance == NULL) {
@@ -38,7 +40,7 @@ class Controller
                 if (static::$auth->login($_POST["login-email"], $_POST["password"])) {
                     header("Refresh:0");
                 } else {
-                    echo "<script>$(document).ready(function(){alert('User not found!');});</script>";
+                    echo "<script>$(document).ready(function(){alert('Špatně zadané údaje');});</script>";
                 }
             }
         }
@@ -82,7 +84,7 @@ class Controller
     private function showUsers($users)
     {
         echo "<table>";
-        echo "<tr><td>ID</td><td>email</td><td>first name</td><td>last name</td><td>address</td><td>role</td><td>actions</td></tr>";
+        echo "<tr><td>id</td><td>email</td><td>jméno</td><td>příjmení</td><td>adresa</td><td>role</td><td>deaktivovat</td><td>akce</td></tr>";
         foreach ($users as $user) {
             $user->setRoles(Role::getArray());
             echo $user->render();
@@ -95,13 +97,15 @@ class Controller
         if (isset($_POST["action"])) {
             if ($_POST["action"] == "by-email") {
                 $users = $this->userDao->getByEmail($_POST["email"]);
-                echo "<h2>Users by email</h2>";
+                echo "<h2>Výsledky vyhledávání:</h2>";
                 $this->showUsers($users);
             } elseif ($_POST["action"] == 'remove-user') {
                 $this->userDao->deleteUser($_POST["id"]);
                 header("Refresh:0");
             } elseif ($_POST["action"] == 'update-user') {
-                $this->userDao->updateUser($_POST["id"], $_POST["email"], $_POST["role"], $_POST["first-name"], $_POST["last-name"], $_POST["address"]);
+                if (isset($_POST["disabled"]) && $_POST["disabled"] == 1)
+                    $this->userDao->updateUser($_POST["id"], $_POST["email"], $_POST["role"], $_POST["first-name"], $_POST["last-name"], $_POST["address"], 1);
+                else $this->userDao->updateUser($_POST["id"], $_POST["email"], $_POST["role"], $_POST["first-name"], $_POST["last-name"], $_POST["address"], 0);
                 header("Refresh:0");
             }
         } else {
@@ -116,17 +120,17 @@ class Controller
             if (filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
                 if ($_POST["password"] == $_POST["password"]) {
                     $this->userDao->addUser($_POST['email'], 'user', password_hash($_POST['password'], PASSWORD_BCRYPT));
-                    echo "<script>$(document).ready(function(){alert('User registered!');});</script>";
-                } else echo "<script>$(document).ready(function(){alert('Passwords doesn\'t match');});</script>";
-            } else echo "<script>$(document).ready(function(){alert('Bad email');});</script>";
+                    echo "<script>$(document).ready(function(){alert('Uživatel úspěšně registrován!');});</script>";
+                } else echo "<script>$(document).ready(function(){alert('Hesla se neshodují');});</script>";
+            } else echo "<script>$(document).ready(function(){alert('Je třeba zadat emailovou adresu');});</script>";
         }
     }
 
     private function showBrands($brands)
     {
         echo "<table>";
-        echo "<tr><td>name</td><td>actions</td></tr>";
-        echo "<tr><form method='post' name='action'><td><input type='text' name='brand'></td><td><button name='action' type='submit' value='add-brand'>add</button></td></form></tr>";
+        echo "<tr><td>název</td><td>akce</td></tr>";
+        echo "<tr><form method='post' name='action'><td><input type='text' name='brand'></td><td><button name='action' type='submit' value='add-brand'>přidat</button></td></form></tr>";
         foreach ($brands as $brand) {
             echo $brand->render();
         }
@@ -138,7 +142,7 @@ class Controller
         if (isset($_POST["action"])) {
             if ($_POST["action"] == "by-brand") {
                 $brands = $this->brandsDao->getByBrand($_POST["brand"]);
-                echo "<h2>Brands by name</h2>";
+                echo "<h2>Výsledky vyhledávání:</h2>";
                 $this->showBrands($brands);
             } elseif ($_POST["action"] == 'remove-brand') {
                 $this->brandsDao->deleteBrand($_POST["id"]);
@@ -159,8 +163,8 @@ class Controller
     private function showCategories($categories)
     {
         echo "<table>";
-        echo "<tr><td>name</td><td>actions</td></tr>";
-        echo "<tr><form method='post' name='action'><td><input type='text' name='category'></td><td><button name='action' type='submit' value='add-category'>add</button></td></form></tr>";
+        echo "<tr><td>název</td><td>deaktivovat</td><td>akce</td></tr>";
+        echo "<tr><form method='post' name='action'><td><input type='text' name='category'></td><td></td><td><button name='action' type='submit' value='add-category'>přidat</button></td></form></tr>";
         foreach ($categories as $category) {
             echo $category->render();
         }
@@ -172,13 +176,16 @@ class Controller
         if (isset($_POST["action"])) {
             if ($_POST["action"] == "by-category") {
                 $categories = $this->categoryDao->getByCategories($_POST["category"]);
-                echo "<h2>Categories by name</h2>";
+                echo "<h2>Výsledky vyhledávání:</h2>";
                 $this->showCategories($categories);
             } elseif ($_POST["action"] == 'remove-category') {
                 $this->categoryDao->deleteCategory($_POST["id"]);
                 header("Refresh:0");
             } elseif ($_POST["action"] == 'update-category') {
-                $this->categoryDao->updateCategory($_POST["id"], $_POST["category"]);
+                if (isset($_POST["disabled"]) && $_POST["disabled"] == 1)
+                    $this->categoryDao->updateCategory($_POST["id"], $_POST["category"], 1);
+                else
+                    $this->categoryDao->updateCategory($_POST["id"], $_POST["category"], 0);
                 header("Refresh:0");
             } elseif ($_POST["action"] == 'add-category') {
                 $this->categoryDao->addCategory($_POST["category"]);
@@ -194,6 +201,7 @@ class Controller
     {
         $categories = $this->categoryDao->getAllCategories();
         foreach ($categories as $category) {
+            if ($category->getDisabled() == 1) continue;
             echo "<a href='" . BASE_URL . "?page=products&category=" . $category->getCategory() . "'>" . $category->getCategory() . "</a>";
         }
     }
@@ -252,22 +260,27 @@ class Controller
         if (isset($_POST["action"])) {
             if ($_POST["action"] == "save") {
                 $this->userDao->updateUser(static::$auth->getIdentity()->getId(), $_POST["email"], static::$auth->getIdentity()->getRole(),
-                    $_POST["first-name"], $_POST["last-name"], $_POST["address"]);
+                    $_POST["first-name"], $_POST["last-name"], $_POST["address"],0);
                 static::$auth->reload();
-                echo "<script>$(document).ready(function(){alert('Saved.');});</script>";
+                echo "<script>$(document).ready(function(){alert('Uloženo.');});</script>";
             } elseif ($_POST["action"] == "change") {
                 if (static::$auth->isPasswordCorrect($_POST["actual-password"])) {
                     if (strlen($_POST["new-password"]) > 8) {
                         if ($_POST["new-password"] == $_POST["new-password-again"]) {
                             $this->userDao->changePassword(static::$auth->getIdentity()->getId(), password_hash($_POST['new-password'], PASSWORD_BCRYPT));
                             static::$auth->reload();
-                            echo "<script>$(document).ready(function(){alert('Password changed');});</script>";
-                        } else echo "<script>$(document).ready(function(){alert('Passwords do not match');});</script>";
-                    } else echo "<script>$(document).ready(function(){alert('Password is too short');});</script>";
-                } else echo "<script>$(document).ready(function(){alert('Bad password');});</script>";
+                            echo "<script>$(document).ready(function(){alert('Heslo změněno');});</script>";
+                        } else echo "<script>$(document).ready(function(){alert('Zadaná hesla se neshodují');});</script>";
+                    } else echo "<script>$(document).ready(function(){alert('Zadané heslo je příliš krátké');});</script>";
+                } else echo "<script>$(document).ready(function(){alert('Špatně zadané aktuální heslo');});</script>";
             }
             unset($_POST["action"]);
         }
+    }
+
+    private function isCategoryDisabled($category)
+    {
+        return $this->categoryDao->isCategoryDisabled($category);
     }
 
     private
@@ -297,11 +310,14 @@ class Controller
         if (isset($_POST["sort"]) && $_POST["sort"] == "costASC") usort($products, "costASC");
         if (isset($_POST["sort"]) && $_POST["sort"] == "createdDESC") usort($products, "createdDESC");
         if (isset($_POST["sort"]) && $_POST["sort"] == "createdASC") usort($products, "createdASC");
-        if (empty($products)) echo "<h2 id='nothing-to-show'>Nothing to show</h2>";
-        else
-            foreach ($products as $product) {
+        $counter = 0;
+        foreach ($products as $product) {
+            if ($product->getDisabled() == 1 || $this->isCategoryDisabled($product->getCategory())) continue;
+            if ($product->getCategory())
                 echo $product->show();
-            }
+            $counter++;
+        }
+        if ($counter == 0) echo "<h2 id='nothing-to-show'>Nic nenalezeno</h2>";
     }
 
     public
@@ -327,8 +343,8 @@ class Controller
     function showProductsOfManagement($brands, $categories, $products)
     {
         echo "<table>";
-        echo "<tr><td>id</td><td>created</td><td>name</td><td>brand</td><td>category</td><td>stock</td><td>image link</td><td>cost</td><td>actions</td></tr>";
-        echo "<tr><td>id</td><td>created</td><form method='post' name='action'><td><input type='text' name='product'></td>";
+        echo "<tr><td>id</td><td>vytvořeno</td><td>název</td><td>značka</td><td>kategorie</td><td>skladem</td><td>obrázek</td><td>cena</td><td>deaktivovat</td><td>akce</td></tr>";
+        echo "<tr><td>id</td><td>vytvořeno</td><form method='post' name='action'><td><input type='text' name='product'></td>";
         echo "<td><select name='brand'>";
         foreach ($brands as $brand) {
             echo "<option value='" . $brand->getBrand() . "'>" . $brand->getBrand() . "</option>";
@@ -336,13 +352,15 @@ class Controller
         echo "</select></td>";
         echo "<td><select name='category'>";
         foreach ($categories as $category) {
+            if ($category->getDisabled() == 1) continue;
             echo "<option value='" . $category->getCategory() . "'>" . $category->getCategory() . "</option>";
         }
         echo "</select></td>";
         echo "<td><input type='text' name='stock' value='0'></td>";
         echo "<td><input type='text' name='image-link' value=''></td>";
         echo "<td><input type='text' name='cost' value='0'></td>";
-        echo "<td><button name='action' type='submit' value='add-product'>add</button></td></form></tr>";
+        echo "<td></td>";
+        echo "<td><button name='action' type='submit' value='add-product'>přidat</button></td></form></tr>";
         foreach ($products as $product) {
             $product->setCategories($categories);
             $product->setBrands($brands);
@@ -365,16 +383,18 @@ class Controller
             } elseif ($_POST["action"] == "edit-description") {
                 header("location: " . BASE_URL . "?page=edit-description&product=" . $_POST["id"]);
             } elseif ($_POST["action"] == "by-id") {
-                echo "<h2>Product by id</h2>";
+                echo "<h2>Výsledky vyhledávání:</h2>";
                 $products = $this->productsDao->getProductById($_POST["id"]);
             } elseif ($_POST["action"] == "by-name") {
-                echo "<h2>Products by name</h2>";
+                echo "<h2>Výsledky vyhledávání:</h2>";
                 $products = $this->productsDao->getProductsByName($_POST["name"]);
             } elseif ($_POST["action"] == "add-product") {
                 $this->productsDao->addProduct($_POST["product"], $_POST["image-link"], $_POST["stock"], $_POST["brand"], $_POST["category"], $_POST["cost"]);
                 header("Refresh:0");
             } elseif ($_POST["action"] == "update-product") {
-                $this->productsDao->updateProduct($_POST["id"], $_POST["name"], $_POST["image-link"], $_POST["stock"], $_POST["brand"], $_POST["category"], $_POST["cost"]);
+                if (isset($_POST["disabled"]) && $_POST["disabled"] == 1)
+                    $this->productsDao->updateProduct($_POST["id"], $_POST["name"], $_POST["image-link"], $_POST["stock"], $_POST["brand"], $_POST["category"], $_POST["cost"], 1);
+                else $this->productsDao->updateProduct($_POST["id"], $_POST["name"], $_POST["image-link"], $_POST["stock"], $_POST["brand"], $_POST["category"], $_POST["cost"], 0);
                 header("Refresh:0");
             }
         }
@@ -383,12 +403,9 @@ class Controller
 
     }
 
-    public
-    function getDescriptionOfProduct($id)
+    public function getProduct($id)
     {
-        if (isset($this->productsDao->getProductById($id)[0])) {
-            return $this->productsDao->getProductById($id)[0]->getDescription();
-        } else return "";
+        return $this->productsDao->getProductById($id)[0];
     }
 
     public
@@ -423,22 +440,22 @@ class Controller
             echo ">" . $brand->getBrand() . "</option>";
         }
         echo '</select>';
-        echo '&nbsp;Sort by : <select name="sort">';
+        echo '&nbsp;Třídit podle : <select name="sort">';
         echo '<option value = "createdDESC"';
         if (isset($_POST["sort"]) && $_POST["sort"] == "createdDESC") echo 'selected="selected"';
-        echo '>Newest</option><option value="costASC"';
+        echo '>Nejnovější</option><option value="costASC"';
         if (isset($_POST["sort"]) && $_POST["sort"] == "costASC") echo 'selected="selected"';
-        echo '>Lowest price</option><option value = "costDESC"';
+        echo '>Nejlevnější</option><option value = "costDESC"';
         if (isset($_POST["sort"]) && $_POST["sort"] == "costDESC") echo 'selected="selected"';
-        echo '>Highest price</option><option value = "createdASC"';
+        echo '>Nejdražší</option><option value = "createdASC"';
         if (isset($_POST["sort"]) && $_POST["sort"] == "createdASC") echo 'selected="selected"';
-        echo '>Oldest</option>';
+        echo '>Nejstarší</option>';
     }
 
     public
     function showResults()
     {
-        echo '<h2>Results for "' . $_GET["q"] . '":</h2>';
+        echo '<h2>Výsledky pro "' . $_GET["q"] . '":</h2>';
     }
 
     public
@@ -458,7 +475,7 @@ class Controller
         $arr = $this->productsDao->getProductById($_POST["add-to-basket"]);
         if (isset($arr[0])) {
             static::$basket->addProduct($arr[0]);
-            echo "<script>$(document).ready(function(){alert('Product " . $arr[0]->getName() . " added to your basket!');});</script>";
+            echo "<script>$(document).ready(function(){alert('Produkt " . $arr[0]->getName() . " přidán do košíku!');});</script>";
         }
     }
 
@@ -481,23 +498,23 @@ class Controller
                     State::getProcessing()->getState(), $this->getLoggedUserId(),
                     static::$basket->getProducts(), $sum);
                 self::$basket->removeAllProducts();
-                echo "<script>alert('Order successfully created!')</script>";
+                echo "<script>alert('Objednávka úspěšně vytvořena!')</script>";
                 header("Refresh:0");
             }
         }
         if (static::$basket->getProducts() != null) {
             $sum = 0;
             echo "<table>";
-            echo "<tr><td></td><td>name</td><td class='right'>stock</td><td class='right'>cost</td></tr>";
+            echo "<tr><td></td><td>název</td><td class='right'>skladem</td><td class='right'>cena</td></tr>";
             foreach (static::$basket->getProducts() as $id) {
                 $product = $this->productsDao->getProductById($id)[0];
                 $sum += $product->getCost();
                 echo $product->renderInBasket();
             }
-            echo "<tr><td></td><td></td><td>Total: </td><td class='total'>$sum Kč</td></tr>";
+            echo "<tr><td></td><td></td><td>Celkem: </td><td class='total'>$sum Kč</td></tr>";
             echo "</table>";
         } else {
-            echo "<h2 id='nothing-to-show'>Nothing to show</h2>";
+            echo "<h2 id='nothing-to-show'>prázdný</h2>";
         }
     }
 
@@ -520,6 +537,19 @@ class Controller
             echo "</table></form>";
         }
     }
+
+    /**
+     * @param mixed $product
+     */
+    public static function setProduct($product)
+    {
+        if ($product == NULL) {
+            header("location: " . BASE_URL);
+        }
+        self::$product = $product;
+    }
+
+
 }
 
 ?>

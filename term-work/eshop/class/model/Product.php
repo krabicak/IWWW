@@ -11,6 +11,7 @@ class Product
     private $category;
     private $created;
     private $stock;
+    private $disabled;
 
     private $categories;
     private $brands;
@@ -200,15 +201,31 @@ class Product
         $this->categories = $categories;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getDisabled()
+    {
+        return $this->disabled;
+    }
+
+    /**
+     * @param mixed $disabled
+     */
+    public function setDisabled($disabled)
+    {
+        $this->disabled = $disabled;
+    }
+
 
     public function show()
     {
         $string = '<form method="post" class="product-box" onclick="javascript:document.location.href =\'' . BASE_URL . '?page=detail&product=' . $this->id . '\'">';
         $string .= '<h2>' . $this->name . '</h2>';
-        $string .= '<img width="60%" src="' . $this->image . '" alt="' . $this->name . '">';
+        $string .= '<img src="' . $this->image . '" alt="' . $this->name . '">';
         $string .= '<div class="description"><h3>' . $this->costs[0]->getCost() . ' Kč</h3>';
-        $string .= '<h3>stock: ' . $this->stock . '</h3>';
-        $string .= '<button type = "submit" name = "add-to-basket" value = "' . $this->id . '">Add to basket</button>';
+        $string .= '<h3>skladem: ' . $this->stock . '</h3>';
+        $string .= '<button type = "submit" name = "add-to-basket" value = "' . $this->id . '">Přidat do košíku</button>';
         $string .= '</div>';
         $string .= "</form>\n";
         return $string;
@@ -217,7 +234,7 @@ class Product
     public function render()
     {
         $string = "<tr><form method='post'>";
-        $string .= "<td>$this->id</td>";
+        $string .= "<td><input type='hidden' name='id' value='$this->id'>$this->id</td>";
         $string .= "<td>$this->created</td>";
         $string .= "<td><input type='text' name='name' value='$this->name'></td>";
         $string .= "<td><select name='brand'>";
@@ -229,6 +246,7 @@ class Product
         $string .= "</select></td>";
         $string .= "<td><select name='category'>";
         foreach ($this->categories as $category) {
+            if ($category->getDisabled() == 1) continue;
             $string .= "<option value='" . $category->getCategory() . "'";
             if ($category->getCategory() == $this->category) $string .= " selected='selected'";
             $string .= ">" . $category->getCategory() . "</option>";
@@ -237,9 +255,11 @@ class Product
         $string .= "<td><input type='text' name='stock' value='$this->stock'></td>";
         $string .= "<td><input type='text' name='image-link' value='$this->image'></td>";
         $string .= "<td><input type='text' name='cost' value='" . $this->costs[0]->getCost() . "'></td>";
-        $string .= "<input type='hidden' name='id' value='$this->id'>";
-        $string .= "<td><button name='action' value='edit-description' type='submit'>edit description</button>";
-        $string .= "<button name='action' value='update-product' type='submit'>update</button></td>";
+        $string .= "<td><input type='checkbox' name='disabled' value='1'";
+        if ($this->disabled==1) $string .= "checked";
+        $string .= "></td>";
+        $string .= "<td><button name='action' value='edit-description' type='submit'>upravit popis</button>";
+        $string .= "<button name='action' value='update-product' type='submit'>upravit</button></td>";
         $string .= "</form></tr>";
         return $string;
     }
@@ -252,7 +272,7 @@ class Product
         $string .= "<td><a href='" . BASE_URL . "?page=detail&product=$this->id'>$this->name</td>";
         $string .= "<td class='right'>$this->stock</td>";
         $string .= "<td class='right'>" . $this->costs[0]->getCost() . " Kč</td>";
-        $string .= "<td><button name='action' value='remove-product' type='submit'>remove</button></td>";
+        $string .= "<td><button name='action' value='remove-product' type='submit'>odstranit</button></td>";
         $string .= "</form></tr>";
         return $string;
     }
