@@ -11,6 +11,7 @@
 #detail #box {
     display: flex;
     flex-wrap: wrap;
+    max-height: 500px;
 }
 
 #detail #box > * {
@@ -26,8 +27,8 @@
 }
 
 #detail #box img {
+    max-height: 300px;
     margin: auto;
-    width: 60%;
 }
 
 #detail #description {

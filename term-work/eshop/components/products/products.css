@@ -11,7 +11,8 @@
 }
 
 .product-box img{
-    width: 60%;
+    max-width: 60%;
+    max-height: 72%;
 }
 
 @media only screen and (max-width: 601px) {
@@ -33,7 +34,6 @@
 .product-box img {
     margin: 10px;
     float: left;
-    border: #bfbfbf solid 1px;
 }
 
 .description {

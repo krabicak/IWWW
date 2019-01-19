@@ -24,6 +24,14 @@ class UserDao
         return $stmt->fetchAll(PDO::FETCH_CLASS, 'User');
     }
 
+    public function getById($id)
+    {
+        $stmt = $this->conn->prepare("SELECT id,email,role,created,first_name,last_name,address,disabled FROM users WHERE id=:id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return ($stmt->fetchAll(PDO::FETCH_CLASS, 'User'))[0];
+    }
+
     public function deleteUser($id)
     {
         $stmt = $this->conn->prepare("DELETE FROM users WHERE id=:id");

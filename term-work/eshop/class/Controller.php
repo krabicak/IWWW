@@ -260,7 +260,7 @@ class Controller
         if (isset($_POST["action"])) {
             if ($_POST["action"] == "save") {
                 $this->userDao->updateUser(static::$auth->getIdentity()->getId(), $_POST["email"], static::$auth->getIdentity()->getRole(),
-                    $_POST["first-name"], $_POST["last-name"], $_POST["address"],0);
+                    $_POST["first-name"], $_POST["last-name"], $_POST["address"], 0);
                 static::$auth->reload();
                 echo "<script>$(document).ready(function(){alert('Uloženo.');});</script>";
             } elseif ($_POST["action"] == "change") {
@@ -372,14 +372,13 @@ class Controller
     public
     function productsManagement()
     {
-
         $categories = $this->categoryDao->getAllCategories();
         $brands = $this->brandsDao->getAllBrands();
         $products = $this->productsDao->getAllProducts();
 
         if (isset($_POST["action"])) {
             if ($_POST["action"] == "upload-image") {
-                ImageHelper::uploadFile();
+                IO::uploadFile();
             } elseif ($_POST["action"] == "edit-description") {
                 header("location: " . BASE_URL . "?page=edit-description&product=" . $_POST["id"]);
             } elseif ($_POST["action"] == "by-id") {
@@ -395,6 +394,22 @@ class Controller
                 if (isset($_POST["disabled"]) && $_POST["disabled"] == 1)
                     $this->productsDao->updateProduct($_POST["id"], $_POST["name"], $_POST["image-link"], $_POST["stock"], $_POST["brand"], $_POST["category"], $_POST["cost"], 1);
                 else $this->productsDao->updateProduct($_POST["id"], $_POST["name"], $_POST["image-link"], $_POST["stock"], $_POST["brand"], $_POST["category"], $_POST["cost"], 0);
+                header("Refresh:0");
+            } elseif ($_POST["action"] == "export") {
+                $file = "export/export.json";
+                file_put_contents($file, json_encode($products));
+            } elseif ($_POST["action"] == "import") {
+                $string = file_get_contents(IO::importJSON());
+                $arr = json_decode($string, true);
+                foreach ($arr as $item) {
+                    $this->productsDao->addProduct(
+                        $item["name"],
+                        $item["image"],
+                        $item["stock"],
+                        $item["brand"],
+                        $item["category"],
+                        $item["cost"]);
+                }
                 header("Refresh:0");
             }
         }
@@ -538,9 +553,6 @@ class Controller
         }
     }
 
-    /**
-     * @param mixed $product
-     */
     public static function setProduct($product)
     {
         if ($product == NULL) {
@@ -549,7 +561,39 @@ class Controller
         self::$product = $product;
     }
 
+    private function showOrders($orders)
+    {
+        foreach ($orders as $order) {
+            echo "<table>";
+            echo $order->render($this->ordersDao->getCostsIdOrder($order->getId()), $this->userDao->getById($order->getUsersId()));
+            echo "</table>";
+        }
+    }
 
+    public function ordersManagement()
+    {
+        if (isset($_POST["action"])) {
+            if ($_POST["action"] == "cancel-order") {
+                $this->ordersDao->cancelOrder($_POST["id"]);
+            } elseif ($_POST["action"] == "send-order") {
+                $this->ordersDao->sendOrder($_POST["id"]);
+            } elseif ($_POST["action"] == "by-id") {
+                $orders = $this->ordersDao->getById($this->productsDao, $_POST["id"]);
+                echo "<h2>Výsledky vyhledávání:</h2>";
+                $this->showOrders($orders);
+            } elseif ($_POST["action"] == "by-email") {
+                $users = $this->userDao->getByEmail($_POST["email"]);
+                echo "<h2>Výsledky vyhledávání:</h2>";
+                foreach ($users as $user) {
+                    $orders = $this->ordersDao->getAllOrdersByUser($user->getId(), $this->productsDao);
+                    $this->showOrders($orders);
+                }
+            }
+        } else {
+            $orders = $this->ordersDao->getAllOrders($this->productsDao);
+            $this->showOrders($orders);
+        }
+    }
 }
 
 ?>

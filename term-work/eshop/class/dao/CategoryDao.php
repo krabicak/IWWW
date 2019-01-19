@@ -33,9 +33,20 @@ class CategoryDao
 
     public function updateCategory($id, $name, $disabled)
     {
-        $stmt = $this->conn->prepare("UPDATE categories SET category=:category,disabled=:disabled WHERE category=:id");
+        if ($id != $name) {
+            $stmt = $this->conn->prepare("INSERT INTO categories(category) VALUES (:category)");
+            $stmt->bindParam(":category", $name);
+            $stmt->execute();
+
+            $stmt = $this->conn->prepare("UPDATE products SET category=:category WHERE category=:id");
+            $stmt->bindParam(":category", $name);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
+            $this->deleteCategory($id);
+        }
+
+        $stmt = $this->conn->prepare("UPDATE categories SET disabled=:disabled WHERE category=:category");
         $stmt->bindParam(":category", $name);
-        $stmt->bindParam(":id", $id);
         $stmt->bindParam(":disabled", $disabled);
         $stmt->execute();
     }

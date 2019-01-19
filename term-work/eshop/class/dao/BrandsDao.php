@@ -33,10 +33,14 @@ class BrandsDao
 
     public function updateBrand($id, $brand)
     {
-        $stmt = $this->conn->prepare("UPDATE brands SET brand=:brand WHERE brand=:id");
+        $stmt = $this->conn->prepare("INSERT INTO brands(brand) values (:brand)");
+        $stmt->bindParam(":brand", $brand);
+        $stmt->execute();
+        $stmt = $this->conn->prepare("UPDATE products SET brand=:brand WHERE brand=:id");
         $stmt->bindParam(":brand", $brand);
         $stmt->bindParam(":id", $id);
         $stmt->execute();
+        $this->deleteBrand($id);
     }
 
     public function addBrand($brand)

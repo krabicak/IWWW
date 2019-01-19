@@ -1,3 +1,46 @@
 #orders-management {
     margin: auto;
+    padding-left: 20px;
+    padding-top: 20px;
+    padding-right: 20px;
+    display: grid;
+}
+
+#orders-management table {
+    width: 100%;
+    border: #333333 solid 1px;
+    margin: 5px;
+}
+
+#orders-management td{
+    border: 1px solid #8d8d8d;
+}
+
+#orders-management h1 {
+    font-size: 30px;
+}
+
+#orders-management .right {
+    text-align: right;
+}
+
+#orders-management .id {
+    width: 5px;
+}
+
+#orders-management .img {
+    width: 15px;
+}
+
+#orders-management .cost {
+    width: 80px;
+    text-align: right;
+}
+
+#orders-management .name {
+    width: 60%;
+}
+
+#orders-management .row {
+    height: 50px;
 }

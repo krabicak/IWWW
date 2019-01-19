@@ -7,7 +7,7 @@ class Order
     private $info;
     private $address;
     private $state;
-    private $usersId;
+    private $users_id;
     private $cost;
     private $created;
 
@@ -99,7 +99,7 @@ class Order
      */
     public function getUsersId()
     {
-        return $this->usersId;
+        return $this->users_id;
     }
 
     /**
@@ -107,7 +107,7 @@ class Order
      */
     public function setUsersId($usersId)
     {
-        $this->usersId = $usersId;
+        $this->users_id = $usersId;
     }
 
     /**
@@ -161,26 +161,48 @@ class Order
 
     public function renderInMyOrders($costs)
     {
-        $string = "<tr><td>id: $this->id</td><td>$this->created</td><td>$this->address</td></tr>";
+        $string = "<tr><td class='id'>id: $this->id</td><td colspan='2'>$this->created</td><td colspan='2' class='right'>Adresa: $this->address</td></tr>";
+        $string .= "<tr><td>id</td><td class='img'>náhled</td><td class='name'>název</td><td class='right'>skladem</td><td class='cost'>cena</td></tr>";
         foreach ($this->products as $product) {
             $string .= $product->renderInOrder($costs);
         }
-        $string .= "<tr><td colspan='3'>$this->info</td></tr>";
-        $string .= "<tr><td></td><td>stav: $this->state</td><td class='right' class='total'>Celkem: $this->cost Kč";
-        $string .= "<input type='hidden' name='id' value='$this->id'></td>";
+        $string .= "<tr><td colspan='5'>$this->info</td></tr>";
+        $string .= "<tr><td></td><td colspan='4'>stav: $this->state, Celkem: $this->cost Kč";
+        $string .= "<input type='hidden' name='id' value='$this->id'>";
         if ($this->state == State::getProcessing()->getState()) {
-            $string .= "<td><button name='action' value='cancel-order' type='submit'>zrušit</button></td>";
+            $string .= "&nbsp;<button name='action' value='cancel-order' type='submit'>zrušit</button>";
         }
-        $string .= "</tr>";
+        $string .= "</td></tr>";
         return $string;
     }
 
-    public function render()
+    public function render($costs, $user)
     {
-        $string = "<tr><form method='post'>";
-        $string .= "<td>$this->id</td>";
-
-        $string .= "</form></tr>";
+        $mail = $user->getEmail();
+        $string = "<form method='post'>";
+        $string .= "<tr><td class='id'>id: $this->id</td><td colspan='2'>$this->created: $mail</td><td colspan='2' class='right'>Dodací adresa: $this->address</td></tr>";
+        $string .= "<tr><td>id</td><td class='img'>náhled</td><td class='name'>název</td><td class='right'>skladem</td><td class='cost'>cena</td></tr>";
+        $counters = array();
+        $stockOk = true;
+        foreach ($this->products as $product) {
+            if (!isset($counters[$product->getId()])) $counters[$product->getId()] = 0;
+            else $counters[$product->getId()]++;
+            if ($counters[$product->getId()] >= $product->getStock()) {
+                $stockOk = false;
+            }
+            $string .= $product->renderInOrder($costs);
+        }
+        $string .= "<tr><td colspan='5'>$this->info</td></tr>";
+        $string .= "<tr><td colspan='2'><input type='hidden' name='id' value='$this->id'></td><td>Celkem: $this->cost Kč";
+        $string .= "<input type='hidden' name='id' value='$this->id'></td>";
+        if ($this->state == State::getProcessing()->getState()) {
+            $string .= "<td colspan='2' class='right'><button name='action' value='cancel-order' type='submit'>zrušit</button>&nbsp;";
+            $string .= "<button name='action' value='send-order' type='submit'";
+            if (!$stockOk) $string .= " disabled";
+            $string .= ">odeslat</button>";
+            if (!$stockOk) $string .= " Nedostatek zboží na skladě";
+        } else $string .= "<td colspan='2'>$this->state</td>";
+        $string .= "</td></tr></form>";
         return $string;
     }
 }

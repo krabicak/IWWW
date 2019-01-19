@@ -31,3 +31,28 @@
 #my-orders > div > form {
     width: 100%;
 }
+
+#my-orders .id {
+    width: 5px;
+}
+
+#my-orders .img {
+    width: 15px;
+}
+
+#my-orders .cost {
+    width: 80px;
+    text-align: right;
+}
+
+#my-orders td{
+    border: 1px solid #8d8d8d;
+}
+
+#my-orders .name {
+    width: 60%;
+}
+
+#my-orders .row {
+    height: 50px;
+}

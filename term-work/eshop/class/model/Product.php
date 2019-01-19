@@ -1,6 +1,6 @@
 <?php
 
-class Product
+class Product implements JsonSerializable
 {
 
     private $id;
@@ -217,7 +217,6 @@ class Product
         $this->disabled = $disabled;
     }
 
-
     public function show()
     {
         $string = '<form method="post" class="product-box" onclick="javascript:document.location.href =\'' . BASE_URL . '?page=detail&product=' . $this->id . '\'">';
@@ -256,7 +255,7 @@ class Product
         $string .= "<td><input type='text' name='image-link' value='$this->image'></td>";
         $string .= "<td><input type='text' name='cost' value='" . $this->costs[0]->getCost() . "'></td>";
         $string .= "<td><input type='checkbox' name='disabled' value='1'";
-        if ($this->disabled==1) $string .= "checked";
+        if ($this->disabled == 1) $string .= "checked";
         $string .= "></td>";
         $string .= "<td><button name='action' value='edit-description' type='submit'>upravit popis</button>";
         $string .= "<button name='action' value='update-product' type='submit'>upravit</button></td>";
@@ -270,7 +269,7 @@ class Product
         $string .= "<input type='hidden' name='id' value='$this->id'>";
         $string .= "<td><img width='35px' src='$this->image'></td>";
         $string .= "<td><a href='" . BASE_URL . "?page=detail&product=$this->id'>$this->name</td>";
-        $string .= "<td class='right'>$this->stock</td>";
+        $string .= "<td class='right'>$this->stock Ks</td>";
         $string .= "<td class='right'>" . $this->costs[0]->getCost() . " Kč</td>";
         $string .= "<td><button name='action' value='remove-product' type='submit'>odstranit</button></td>";
         $string .= "</form></tr>";
@@ -279,9 +278,10 @@ class Product
 
     public function renderInOrder($costsId)
     {
-        $string = "<tr>";
-        $string .= "<td><img width='35px' src='$this->image'></td>";
+        $string = "<tr class='row'>";
+        $string .= "<td>$this->id</td><td><img width='35px' src='$this->image'></td>";
         $string .= "<td><a href='" . BASE_URL . "?page=detail&product=$this->id'>$this->name</a></td>";
+        $string .= "<td class='right'>$this->stock Ks</td>";
         $string .= "<td class='right'>";
         foreach ($this->costs as $cos) {
             foreach ($costsId as $c) {
@@ -296,4 +296,27 @@ class Product
         return $string;
     }
 
+    /**
+     * Specify data which should be serialized to JSON
+     * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    public function jsonSerialize()
+    {
+
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "description" => $this->description,
+            "image" => $this->image,
+            "brand" => $this->brand,
+            "category" => $this->category,
+            "created" => $this->created,
+            "stock" => $this->stock,
+            "disabled" => $this->disabled,
+            "cost" => $this->getCost()
+        ];
+    }
 }

@@ -79,4 +79,43 @@ class OrdersDao
         $stmt->bindParam(":state", $state);
         $stmt->execute();
     }
+
+    public function sendOrder($order)
+    {
+        $stmt = $this->conn->prepare("SELECT products.id, products.stock 
+          FROM products JOIN costs ON products.id = costs.product 
+          JOIN orders_has_products ON costs.id = orders_has_products.costs_id 
+          WHERE orders_has_products.orders_id=:id");
+        $stmt->bindParam(":id", $order);
+        $stmt->execute();
+        $products = $stmt->fetchAll(PDO::FETCH_CLASS, 'Product');
+        foreach ($products as $product) {
+            $stmt = $this->conn->prepare("UPDATE products SET stock=:stock WHERE id=:id");
+            $id = $product->getId();
+            $stock = $product->getStock() - 1;
+            $stmt->bindParam(":id", $id);
+            $stmt->bindParam(":stock", $stock);
+            $stmt->execute();
+        }
+
+        $stmt = $this->conn->prepare("UPDATE orders SET state=:state WHERE id=:id");
+        $state = State::getSent()->getState();
+        $stmt->bindParam(":id", $order);
+        $stmt->bindParam(":state", $state);
+        $stmt->execute();
+    }
+
+    public function getById($productsDao, $id)
+    {
+        $stmt = $this->conn->prepare("SELECT * FROM orders WHERE id LIKE concat('%',:id,'%') ORDER BY created DESC ");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $orders = $stmt->fetchAll(PDO::FETCH_CLASS, 'Order');
+
+        foreach ($orders as $order) {
+            $order->setProducts($productsDao->getProductsByOrderId($order->getId()));
+        }
+
+        return $orders;
+    }
 }
