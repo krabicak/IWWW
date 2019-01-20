@@ -29,15 +29,15 @@ class Controller
         $this->categoryDao = new CategoryDao(Connection::getPdoInstance());
         $this->productsDao = new ProductsDao(Connection::getPdoInstance());
         $this->ordersDao = new OrdersDao(Connection::getPdoInstance());
-        static::$auth = Authentication::getInstance();
-        static::$basket = BasketHelper::getInstance();
+        self::$auth = Authentication::getInstance();
+        self::$basket = BasketHelper::getInstance();
     }
 
     public function login()
     {
         if (isset($_POST["login-email"]) && $_POST["password"]) {
             if (filter_var($_POST["login-email"], FILTER_VALIDATE_EMAIL)) {
-                if (static::$auth->login($_POST["login-email"], $_POST["password"])) {
+                if (self::$auth->login($_POST["login-email"], $_POST["password"])) {
                     header("Refresh:0");
                 } else {
                     echo "<script>$(document).ready(function(){alert('Špatně zadané údaje');});</script>";
@@ -53,17 +53,17 @@ class Controller
 
     public function isUserAdmin()
     {
-        return ($this->isUserLogged() && static::$auth->getIdentity()->getRole() == "admin");
+        return ($this->isUserLogged() && self::$auth->getIdentity()->getRole() == "admin");
     }
 
     public function isUserManager()
     {
-        return ($this->isUserLogged() && static::$auth->getIdentity()->getRole() == "manager" || $this->isUserAdmin());
+        return ($this->isUserLogged() && self::$auth->getIdentity()->getRole() == "manager" || $this->isUserAdmin());
     }
 
     public function logout()
     {
-        static::$auth->logout();
+        self::$auth->logout();
         header("location: " . BASE_URL);
         exit();
     }
@@ -283,29 +283,19 @@ class Controller
         return $this->categoryDao->isCategoryDisabled($category);
     }
 
-    private
-    function showProducts($products)
-    {
-        function costDESC($a, $b)
-        {
+    private function showProducts($products){
+        function costDESC($a, $b){
             return $a->getCost() < $b->getCost();
         }
-
-        function costASC($a, $b)
-        {
+        function costASC($a, $b){
             return $a->getCost() > $b->getCost();
         }
-
-        function createdDESC($a, $b)
-        {
+        function createdDESC($a, $b){
             return $a->getCreated() < $b->getCreated();
         }
-
-        function createdASC($a, $b)
-        {
+        function createdASC($a, $b){
             return $a->getCreated() > $b->getCreated();
         }
-
         if (isset($_POST["sort"]) && $_POST["sort"] == "costDESC") usort($products, "costDESC");
         if (isset($_POST["sort"]) && $_POST["sort"] == "costASC") usort($products, "costASC");
         if (isset($_POST["sort"]) && $_POST["sort"] == "createdDESC") usort($products, "createdDESC");
@@ -313,8 +303,7 @@ class Controller
         $counter = 0;
         foreach ($products as $product) {
             if ($product->getDisabled() == 1 || $this->isCategoryDisabled($product->getCategory())) continue;
-            if ($product->getCategory())
-                echo $product->show();
+            if ($product->getCategory()) echo $product->show();
             $counter++;
         }
         if ($counter == 0) echo "<h2 id='nothing-to-show'>Nic nenalezeno</h2>";
@@ -397,7 +386,7 @@ class Controller
                 header("Refresh:0");
             } elseif ($_POST["action"] == "export") {
                 $file = "export/export.json";
-                file_put_contents($file, json_encode($products));
+                file_put_contents($file, json_encode($products, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE));
             } elseif ($_POST["action"] == "import") {
                 $string = file_get_contents(IO::importJSON());
                 $arr = json_decode($string, true);
@@ -494,8 +483,7 @@ class Controller
         }
     }
 
-    public
-    function basket()
+    public function basket()
     {
         if (isset($_POST["action"])) {
             if ($_POST["action"] == "remove-product") {

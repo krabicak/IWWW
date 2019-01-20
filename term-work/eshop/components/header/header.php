@@ -13,7 +13,6 @@
                 >
                 <button name='page' value='products' type='submit'>Vyhledat</button>
             </div>
-            <a href=<?= BASE_URL . "?page=contact" ?>>Kontakty</a>
             <?php
             if (Controller::getInstance()->isUserLogged()) {
                 echo '<a href="' . BASE_URL . '?page=basket">Košík</a>';
