@@ -36,3 +36,25 @@ p {
     font-size: 18px;
 }
 
+@media print{
+    header{
+        display: none;
+    }
+
+    nav{
+        display: none;
+    }
+
+    #filter-by{
+        display: none;
+    }
+
+    #search_by_id{
+        display: none;
+    }
+
+    h2{
+        display: none;
+    }
+}
+
